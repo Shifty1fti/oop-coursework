@@ -6,17 +6,25 @@
  * He left a sticky note: "the slide-back thing is optional probably".
  * It is not optional. Good luck.
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author (Iftikhar Khan)
+ * @version (19/04/26)
  */
 public class Typist
 {
+
     // Fields of class Typist
     // Hint: you will need six fields. Think carefully about their types.
     // One of them tracks how far along the passage the typist has reached.
     // Another tracks whether the typist is currently burnt out.
     // A third tracks HOW MANY turns of burnout remain (not just whether they are burnt out).
     // The remaining three should be fairly obvious.
+
+    char typistSymbol;
+    String typistName;
+    double typistAccuracy;
+    int currentProgress;
+    boolean isBurned;
+    int burnTurns;
 
 
 
@@ -32,7 +40,12 @@ public class Typist
      */
     public Typist(char typistSymbol, String typistName, double typistAccuracy)
     {
-
+        this.typistSymbol = typistSymbol;
+        this.typistName = typistName;
+        this.typistAccuracy = typistAccuracy;
+        this.currentProgress = 0;
+        this.isBurned = false;
+        this.burnTurns = 0;
     }
 
 
@@ -46,7 +59,8 @@ public class Typist
      */
     public void burnOut(int turns)
     {
-
+        this.isBurned = true;
+	this.burnTurns = turns;
     }
 
     /**
@@ -56,7 +70,11 @@ public class Typist
      */
     public void recoverFromBurnout()
     {
+        this.burnTurns--;
 
+        if (burnTurns == 0) {
+            this.isBurned = false;
+        }
     }
 
     /**
@@ -66,7 +84,7 @@ public class Typist
      */
     public double getAccuracy()
     {
-        return 0.0; // placeholder - replace with correct implementation
+        return this.typistAccuracy;
     }
 
     /**
@@ -78,7 +96,7 @@ public class Typist
      */
     public int getProgress()
     {
-        return 0; // placeholder - replace with correct implementation
+        return this.currentProgress;
     }
 
     /**
@@ -88,7 +106,7 @@ public class Typist
      */
     public String getName()
     {
-        return ""; // placeholder - replace with correct implementation
+        return this.typistName;
     }
 
     /**
@@ -98,7 +116,7 @@ public class Typist
      */
     public char getSymbol()
     {
-        return ' '; // placeholder - replace with correct implementation
+        return this.typistSymbol; 
     }
 
     /**
@@ -109,7 +127,10 @@ public class Typist
      */
     public int getBurnoutTurnsRemaining()
     {
-        return 0; // placeholder - replace with correct implementation
+        if (!this.isBurned) {
+            return 0;
+        }
+        return this.burnTurns;
     }
 
     /**
@@ -118,7 +139,9 @@ public class Typist
      */
     public void resetToStart()
     {
-
+        this.isBurned = false;
+        this.burnTurns = 0;
+        this.currentProgress = 0;
     }
 
     /**
@@ -128,7 +151,7 @@ public class Typist
      */
     public boolean isBurntOut()
     {
-        return false; // placeholder - replace with correct implementation
+        return this.isBurned;
     }
 
     /**
@@ -137,7 +160,7 @@ public class Typist
      */
     public void typeCharacter()
     {
-
+        this.currentProgress ++;
     }
 
     /**
@@ -148,6 +171,9 @@ public class Typist
      */
     public void slideBack(int amount)
     {
+        if (amount > 0 && (this.currentProgress - amount >= 0)) {
+            this.currentProgress -= amount;
+        }
 
     }
 
@@ -159,7 +185,15 @@ public class Typist
      */
     public void setAccuracy(double newAccuracy)
     {
-
+        if (newAccuracy < 0.0) {
+            this.typistAccuracy = 0.0;
+        }
+        else if (newAccuracy > 1.0) {
+            this.typistAccuracy = 1.0;
+        }
+        else {
+            this.typistAccuracy = newAccuracy;
+        }
     }
 
     /**
@@ -169,7 +203,7 @@ public class Typist
      */
     public void setSymbol(char newSymbol)
     {
-
+        this.typistSymbol = newSymbol;
     }
 
 }

@@ -70,10 +70,11 @@ public class Typist
      */
     public void recoverFromBurnout()
     {
-        this.burnTurns--;
-
-        if (burnTurns == 0) {
-            this.isBurned = false;
+        if (this.isBurned) {
+            this.burnTurns--;
+            if (burnTurns == 0) {
+                this.isBurned = false;
+            }
         }
     }
 
@@ -160,7 +161,9 @@ public class Typist
      */
     public void typeCharacter()
     {
+        if(!this.isBurned) {
         this.currentProgress ++;
+        }
     }
 
     /**
@@ -171,8 +174,14 @@ public class Typist
      */
     public void slideBack(int amount)
     {
-        if (amount > 0 && (this.currentProgress - amount >= 0)) {
-            this.currentProgress -= amount;
+        if (amount <= 0) {
+            return;
+        }
+
+        this.currentProgress -= amount;
+
+        if (this.currentProgress < 0) {
+            this.currentProgress = 0;
         }
     }
 

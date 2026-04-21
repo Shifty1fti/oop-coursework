@@ -19,12 +19,12 @@ public class Typist
     // A third tracks HOW MANY turns of burnout remain (not just whether they are burnt out).
     // The remaining three should be fairly obvious.
 
-    char typistSymbol;
-    String typistName;
-    double typistAccuracy;
-    int currentProgress;
-    boolean isBurned;
-    int burnTurns;
+    private char typistSymbol;
+    private String typistName;
+    private double typistAccuracy;
+    private int currentProgress;
+    private boolean isBurned;
+    private int burnTurns;
 
 
 
@@ -60,7 +60,7 @@ public class Typist
     public void burnOut(int turns)
     {
         this.isBurned = true;
-	this.burnTurns = turns;
+	    this.burnTurns = turns;
     }
 
     /**
@@ -174,7 +174,6 @@ public class Typist
         if (amount > 0 && (this.currentProgress - amount >= 0)) {
             this.currentProgress -= amount;
         }
-
     }
 
     /**

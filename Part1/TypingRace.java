@@ -94,10 +94,23 @@ public class TypingRace
             printRace();
 
             // Check if any typist has finished the passage
-            if ( raceFinishedBy(seat1Typist) || raceFinishedBy(seat2Typist) || raceFinishedBy(seat3Typist) )
-            {
+
+            if (raceFinishedBy(seat1Typist)) {
                 finished = true;
+                System.out.println("\n And the winner is... " + seat1Typist.getName() + "!");
             }
+
+            else if (raceFinishedBy(seat2Typist)) {
+                finished = true;
+                System.out.println("\n And the winner is... " + seat2Typist.getName() + "!");
+            }
+
+            else if (raceFinishedBy(seat3Typist)) {
+                finished = true;
+                System.out.println("\n And the winner is... " + seat3Typist.getName() + "!");
+            }
+
+
 
             // Wait 200ms between turns so the animation is visible
             try {

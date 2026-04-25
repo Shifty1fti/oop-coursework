@@ -146,13 +146,13 @@ public class TypingRace
         }
 
         if (burnoutoccur1) {
-            seat1Typist.setAccuracy(seat1Typist.getAccuracy() - 0.01);
+            seat1Typist.setAccuracy(Math.max(0.0, seat1Typist.getAccuracy() - 0.01));
         }
         if (burnoutoccur2) {
-            seat2Typist.setAccuracy(seat2Typist.getAccuracy() - 0.01);
+            seat2Typist.setAccuracy(Math.max(0.0, seat2Typist.getAccuracy() - 0.01));
         }
         if (burnoutoccur3) {
-            seat3Typist.setAccuracy(seat3Typist.getAccuracy() - 0.01);
+            seat3Typist.setAccuracy(Math.max(0.0, seat3Typist.getAccuracy() - 0.01));
         }
 
         announceWinner(winnerTypist, winnerAccuracy);

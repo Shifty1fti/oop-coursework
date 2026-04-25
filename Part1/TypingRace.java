@@ -18,6 +18,9 @@ public class TypingRace
     private Typist seat2Typist;
     private Typist seat3Typist;
 
+    private Typist winnerTypist;
+    private double winnerAccuracy;
+
     // Accuracy thresholds for mistype and burnout events
     // (Ty tuned these values "by feel". They may need adjustment.)
     private static final double MISTYPE_BASE_CHANCE = 0.3;
@@ -87,6 +90,10 @@ public class TypingRace
         double seat2InitialAccuracy = seat2Typist.getAccuracy();
         double seat3InitialAccuracy = seat3Typist.getAccuracy();
 
+        boolean burnoutoccur1 = false;
+        boolean burnoutoccur2 = false;
+        boolean burnoutoccur3 = false;
+
         boolean finished = false;
 
         // Reset all typists to the start of the passage
@@ -105,18 +112,31 @@ public class TypingRace
             // Print the current state of the race
             printRace();
 
+            if (seat1Typist.isBurntOut()) {
+                burnoutoccur1 = true;
+            }
+            if (seat2Typist.isBurntOut()) {
+                burnoutoccur2 = true;
+            }
+            if (seat3Typist.isBurntOut()) {
+                burnoutoccur3 = true;
+            }
+
             // Check if any typist has finished the passage
             if (raceFinishedBy(seat1Typist)) {
                 finished = true;
-                announceWinner(seat1Typist, seat1InitialAccuracy);
+                winnerTypist = seat1Typist;
+                winnerAccuracy = seat1InitialAccuracy;
             }
             else if (raceFinishedBy(seat2Typist)) {
                 finished = true;
-                announceWinner(seat2Typist, seat2InitialAccuracy);
+                winnerTypist = seat2Typist;
+                winnerAccuracy = seat2InitialAccuracy;
             }
             else if (raceFinishedBy(seat3Typist)) {
                 finished = true;
-                announceWinner(seat3Typist, seat3InitialAccuracy);
+                winnerTypist = seat3Typist;
+                winnerAccuracy = seat3InitialAccuracy;
             }
 
             // Wait 200ms between turns so the animation is visible
@@ -124,6 +144,18 @@ public class TypingRace
                 TimeUnit.MILLISECONDS.sleep(200);
             } catch (Exception e) {}
         }
+
+        if (burnoutoccur1) {
+            seat1Typist.setAccuracy(seat1Typist.getAccuracy() - 0.01);
+        }
+        if (burnoutoccur2) {
+            seat2Typist.setAccuracy(seat2Typist.getAccuracy() - 0.01);
+        }
+        if (burnoutoccur3) {
+            seat3Typist.setAccuracy(seat3Typist.getAccuracy() - 0.01);
+        }
+
+        announceWinner(winnerTypist, winnerAccuracy);
     }
 
     /**
@@ -136,6 +168,9 @@ public class TypingRace
     private void announceWinner(Typist winner, double initialAccuracy)
     {
         System.out.println("\n And the winner is... " + winner.getName() + "!");
+
+        double newAccuracy = winner.getAccuracy() + 0.02;
+        winner.setAccuracy(newAccuracy);
         double finalAccuracy = winner.getAccuracy();
 
         String change;
@@ -175,18 +210,16 @@ public class TypingRace
         }
 
         // Attempt to type a character
-        // If they mistype, they don't advance (and slide back instead)
-        double randomValue = Math.random();
-        if (randomValue < theTypist.getAccuracy())
+        if (Math.random() < theTypist.getAccuracy())
         {
             theTypist.typeCharacter();
         }
-        else if (randomValue < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+
+        // Mistype check — the probability should reflect the typist's accuracy
+        if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
-            // Mistype: slide back, but don't advance
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
         }
-        // Otherwise: neither advances nor slides back (keystroke was ignored)
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
@@ -311,7 +344,8 @@ public class TypingRace
         race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
         race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
         
-        race.startRace();
-        
+        for (int i = 0; i < 10; i++) {
+            race.startRace();
+        }
     }
 }

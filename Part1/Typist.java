@@ -199,9 +199,10 @@ public class Typist
         else if (newAccuracy > 1.0) {
             this.typistAccuracy = 1.0;
         }
-        else {
-            this.typistAccuracy = newAccuracy;
-        }
+        
+        newAccuracy = Math.round(newAccuracy * 100.0) / 100.0;
+
+        this.typistAccuracy = newAccuracy;
     }
 
     /**

@@ -75,6 +75,18 @@ public class TypingRace
      */
     public void startRace()
     {
+        // Null safety check — ensure all three typists are present
+        if (seat1Typist == null || seat2Typist == null || seat3Typist == null)
+        {
+            System.out.println("Error: All three seats must be filled before starting a race.");
+            return;
+        }
+
+        // Store initial accuracies to track changes after the race
+        double seat1InitialAccuracy = seat1Typist.getAccuracy();
+        double seat2InitialAccuracy = seat2Typist.getAccuracy();
+        double seat3InitialAccuracy = seat3Typist.getAccuracy();
+
         boolean finished = false;
 
         // Reset all typists to the start of the passage
@@ -94,31 +106,50 @@ public class TypingRace
             printRace();
 
             // Check if any typist has finished the passage
-
             if (raceFinishedBy(seat1Typist)) {
                 finished = true;
-                System.out.println("\n And the winner is... " + seat1Typist.getName() + "!");
+                announceWinner(seat1Typist, seat1InitialAccuracy);
             }
-
             else if (raceFinishedBy(seat2Typist)) {
                 finished = true;
-                System.out.println("\n And the winner is... " + seat2Typist.getName() + "!");
+                announceWinner(seat2Typist, seat2InitialAccuracy);
             }
-
             else if (raceFinishedBy(seat3Typist)) {
                 finished = true;
-                System.out.println("\n And the winner is... " + seat3Typist.getName() + "!");
+                announceWinner(seat3Typist, seat3InitialAccuracy);
             }
-
-
 
             // Wait 200ms between turns so the animation is visible
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
             } catch (Exception e) {}
         }
+    }
 
-        // TODO (Task 2a): Print the winner's name here
+    /**
+     * Announces the winner and displays their accuracy change.
+     * Demonstrates improved accuracy if they won, or degraded accuracy if burnout affected them.
+     *
+     * @param winner the typist who won the race
+     * @param initialAccuracy their accuracy at the start of the race
+     */
+    private void announceWinner(Typist winner, double initialAccuracy)
+    {
+        System.out.println("\n And the winner is... " + winner.getName() + "!");
+        double finalAccuracy = winner.getAccuracy();
+
+        String change;
+        if (finalAccuracy > initialAccuracy) {
+            change = "improved";
+        }
+        else if (finalAccuracy < initialAccuracy) {
+            change = "decreased";
+        }
+        else {
+            change = "unchanged";
+        }
+
+        System.out.println(" Final accuracy: " + finalAccuracy + " (" + change + " from " + initialAccuracy + ")");
     }
 
     /**
@@ -144,16 +175,18 @@ public class TypingRace
         }
 
         // Attempt to type a character
-        if (Math.random() < theTypist.getAccuracy())
+        // If they mistype, they don't advance (and slide back instead)
+        double randomValue = Math.random();
+        if (randomValue < theTypist.getAccuracy())
         {
             theTypist.typeCharacter();
         }
-
-        // Mistype check — the probability should reflect the typist's accuracy
-        if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+        else if (randomValue < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
+            // Mistype: slide back, but don't advance
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
         }
+        // Otherwise: neither advances nor slides back (keystroke was ignored)
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
@@ -277,6 +310,8 @@ public class TypingRace
         race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
         race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
         race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
+        
         race.startRace();
+        
     }
 }

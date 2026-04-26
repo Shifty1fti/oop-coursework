@@ -25,6 +25,7 @@ public class Typist
     private int currentProgress;
     private boolean isBurned;
     private int burnTurns;
+    private boolean ifMistype;
 
 
 
@@ -155,6 +156,18 @@ public class Typist
         return this.isBurned;
     }
 
+    public void markMistype () {
+        this.ifMistype = true;
+    }
+
+    public boolean hasMistype () {
+        return this.ifMistype;
+    }
+
+    public void clearMistype() {
+        this.ifMistype = false;
+    }
+
     /**
      * Advances the typist forward by one character along the passage.
      * Should only be called when the typist is not burnt out.
@@ -199,7 +212,7 @@ public class Typist
         else if (newAccuracy > 1.0) {
             this.typistAccuracy = 1.0;
         }
-        
+
         newAccuracy = Math.round(newAccuracy * 100.0) / 100.0;
 
         this.typistAccuracy = newAccuracy;

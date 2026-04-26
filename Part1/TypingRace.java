@@ -202,6 +202,8 @@ public class TypingRace
      */
     private void advanceTypist(Typist theTypist)
     {
+        theTypist.clearMistype();
+
         if (theTypist.isBurntOut())
         {
             // Recovering from burnout — skip this turn
@@ -219,6 +221,7 @@ public class TypingRace
         if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
+            theTypist.markMistype();
         }
 
         // Burnout check — pushing too hard increases burnout risk
@@ -298,6 +301,12 @@ public class TypingRace
         // Always show the typist's symbol so they can be identified on screen.
         // Append ~ when burnt out so the state is visible without hiding identity.
         System.out.print(theTypist.getSymbol());
+
+        if (theTypist.hasMistype()) {
+            System.out.print("<");
+            spacesAfter--;
+        }
+
         if (theTypist.isBurntOut())
         {
             System.out.print('~');

@@ -4,9 +4,6 @@ import java.util.concurrent.TimeUnit;
  * A typing race simulation. Three typists race to complete a passage of text,
  * advancing character by character — or sliding backwards when they mistype.
  *
- * Originally written by Ty Posaurus, who left this project to "focus on his
- * two-finger technique". He assured us the code was "basically done".
- * We have found evidence to the contrary.
  *
  * @author TyPosaurus
  * @version 0.7 (the other 0.3 is left as an exercise for the reader)
@@ -14,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class TypingRace
 {
     private int passageLength;   // Total characters in the passage to type
-    private Typist seat1Typist;
+    private Typist seat1Typist; // Typist attributes which store all 3 typists
     private Typist seat2Typist;
     private Typist seat3Typist;
 
-    private Typist winnerTypist;
+    private Typist winnerTypist; // Attribute that stores the winner and their accuracy
     private double winnerAccuracy;
 
     // Accuracy thresholds for mistype and burnout events
@@ -52,7 +49,7 @@ public class TypingRace
      */
     public void addTypist(Typist theTypist, int seatNumber)
     {
-        if (seatNumber == 1)
+        if (seatNumber == 1) // assigns the seats for each Typist
         {
             seat1Typist = theTypist;
         }
@@ -80,7 +77,7 @@ public class TypingRace
      */
     public void startRace()
     {
-        // Null safety check — ensure all three typists are present
+        // Null safety check which ensures all three typists are present
         if (seat1Typist == null || seat2Typist == null || seat3Typist == null)
         {
             System.out.println("Error: All three seats must be filled before starting a race.");
@@ -92,9 +89,10 @@ public class TypingRace
         double seat2InitialAccuracy = seat2Typist.getAccuracy();
         double seat3InitialAccuracy = seat3Typist.getAccuracy();
 
-        boolean burnoutoccur1 = false;
-        boolean burnoutoccur2 = false;
-        boolean burnoutoccur3 = false;
+        // Variable used to checks if the user has been burnt out in the round
+        boolean seat1BurnoutOccurred = false;
+        boolean seat2BurnoutOccurred = false;
+        boolean seat3BurnoutOccurred = false;
 
         boolean finished = false;
 
@@ -114,14 +112,15 @@ public class TypingRace
             // Print the current state of the race
             printRace();
 
+            // Assigns burnout if they have experienced at least once in the round
             if (seat1Typist.isBurntOut()) {
-                burnoutoccur1 = true;
+                seat1BurnoutOccurred = true;
             }
             if (seat2Typist.isBurntOut()) {
-                burnoutoccur2 = true;
+                seat2BurnoutOccurred = true;
             }
             if (seat3Typist.isBurntOut()) {
-                burnoutoccur3 = true;
+                seat3BurnoutOccurred = true;
             }
 
             // Check if any typist has finished the passage
@@ -147,13 +146,14 @@ public class TypingRace
             } catch (Exception e) {}
         }
 
-        if (burnoutoccur1) {
+        // Changes accuracy of each typist if they burnt out in the round
+        if (seat1BurnoutOccurred) {
             seat1Typist.setAccuracy(Math.max(0.0, seat1Typist.getAccuracy() - 0.01));
         }
-        if (burnoutoccur2) {
+        if (seat2BurnoutOccurred) {
             seat2Typist.setAccuracy(Math.max(0.0, seat2Typist.getAccuracy() - 0.01));
         }
-        if (burnoutoccur3) {
+        if (seat3BurnoutOccurred) {
             seat3Typist.setAccuracy(Math.max(0.0, seat3Typist.getAccuracy() - 0.01));
         }
 
@@ -171,7 +171,7 @@ public class TypingRace
     {
         System.out.println("\n And the winner is... " + winner.getName() + "!");
 
-        double newAccuracy = winner.getAccuracy() + 0.02;
+        double newAccuracy = winner.getAccuracy() + 0.02; // Increases accuracy of user if they win
         winner.setAccuracy(newAccuracy);
         double finalAccuracy = winner.getAccuracy();
 
@@ -204,7 +204,7 @@ public class TypingRace
      */
     private void advanceTypist(Typist theTypist)
     {
-        theTypist.clearMistype();
+        theTypist.clearMistype(); // Resets state of mistype in every turn
 
         if (theTypist.isBurntOut())
         {
@@ -228,7 +228,7 @@ public class TypingRace
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < 0.05 * theTypist.getAccuracy() * theTypist.getAccuracy())
+        if (Math.random() < (0.05 * theTypist.getAccuracy() * theTypist.getAccuracy()))
         {
             theTypist.burnOut(BURNOUT_DURATION);
         }
@@ -242,7 +242,6 @@ public class TypingRace
      */
     private boolean raceFinishedBy(Typist theTypist)
     {
-        // Ty was confident this condition was correct
         if (theTypist.getProgress() >= passageLength)
         {
             return true;
@@ -256,7 +255,8 @@ public class TypingRace
     /**
      * Prints the current state of the race to the terminal.
      * Shows each typist's position along the passage, burnout state,
-     * and a WPM estimate based on current progress.
+     * and a WPM estimate based on current progress
+     * * and mistype indicators.
      */
     private void printRace()
     {
@@ -311,8 +311,8 @@ public class TypingRace
 
         if (theTypist.isBurntOut())
         {
-            System.out.print("[~]");
-            spacesAfter-= 3; // 
+            System.out.print("~");
+            spacesAfter--; // Account for single ~ character
         }
 
         multiplePrint(' ', Math.max(0, spacesAfter));
@@ -323,7 +323,7 @@ public class TypingRace
         if (theTypist.isBurntOut() && theTypist.hasMistype()) {
             System.out.print(theTypist.getName()
             + " (Accuracy: " + theTypist.getAccuracy() + ")"
-            + " MISTYPE "
+            + " -> just mistyped"
             + " BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
         }
 
@@ -337,7 +337,7 @@ public class TypingRace
         else if (theTypist.hasMistype()) {
             System.out.print(theTypist.getName()
                 + " (Accuracy: " + theTypist.getAccuracy() + ")"
-                + " MISTYPE ");
+                + " -> just mistyped");
         }
 
         else
@@ -366,11 +366,9 @@ public class TypingRace
     public static void main(String[] args) {
         TypingRace race = new TypingRace(40);
         race.addTypist(new Typist('①', "TURBOFINGERS", 0.85), 1);
-        race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.60), 2);
-        race.addTypist(new Typist('③', "HUNT_N_PECK",   0.30), 3);
+        race.addTypist(new Typist('②', "QWERTY_QUEEN",  0.85), 2);
+        race.addTypist(new Typist('③', "HUNT_N_PECK",   0.85), 3);
         
-        for (int i = 0; i < 10; i++) {
-            race.startRace();
-        }
+        race.startRace();
     }
 }

@@ -294,8 +294,8 @@ public class TypingRace
      */
     private void printSeat(Typist theTypist)
     {
-        int spacesBefore = theTypist.getProgress();
-        int spacesAfter  = passageLength - theTypist.getProgress();
+        int spacesBefore = Math.min(theTypist.getProgress(), passageLength);
+        int spacesAfter  = passageLength - spacesBefore;
 
         System.out.print('|');
         multiplePrint(' ', spacesBefore);

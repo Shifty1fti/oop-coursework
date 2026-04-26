@@ -40,6 +40,8 @@ public class TypingRace
         seat1Typist = null;
         seat2Typist = null;
         seat3Typist = null;
+        this.winnerTypist = null;
+        this.winnerAccuracy = 0.0;
     }
 
     /**
@@ -313,7 +315,7 @@ public class TypingRace
             spacesAfter-= 3; // 
         }
 
-        multiplePrint(' ', spacesAfter);
+        multiplePrint(' ', Math.max(0, spacesAfter));
         System.out.print('|');
         System.out.print(' ');
 

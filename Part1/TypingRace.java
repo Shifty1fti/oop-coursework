@@ -303,14 +303,14 @@ public class TypingRace
         System.out.print(theTypist.getSymbol());
 
         if (theTypist.hasMistype()) {
-            System.out.print("<");
-            spacesAfter--;
+            System.out.print("[<]");
+            spacesAfter -= 3;
         }
 
         if (theTypist.isBurntOut())
         {
-            System.out.print('~');
-            spacesAfter--; // symbol + ~ together take two characters
+            System.out.print("[~]");
+            spacesAfter-= 3; // 
         }
 
         multiplePrint(' ', spacesAfter);
@@ -318,12 +318,26 @@ public class TypingRace
         System.out.print(' ');
 
         // Print name and accuracy
-        if (theTypist.isBurntOut())
+        if (theTypist.isBurntOut() && theTypist.hasMistype()) {
+            System.out.print(theTypist.getName()
+            + " (Accuracy: " + theTypist.getAccuracy() + ")"
+            + " MISTYPE "
+            + " BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
+        }
+
+        else if (theTypist.isBurntOut())
         {
             System.out.print(theTypist.getName()
                 + " (Accuracy: " + theTypist.getAccuracy() + ")"
                 + " BURNT OUT (" + theTypist.getBurnoutTurnsRemaining() + " turns)");
         }
+
+        else if (theTypist.hasMistype()) {
+            System.out.print(theTypist.getName()
+                + " (Accuracy: " + theTypist.getAccuracy() + ")"
+                + " MISTYPE ");
+        }
+
         else
         {
             System.out.print(theTypist.getName()

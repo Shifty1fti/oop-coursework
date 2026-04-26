@@ -47,6 +47,7 @@ public class Typist
         this.currentProgress = 0;
         this.isBurned = false;
         this.burnTurns = 0;
+        this.ifMistype = false;
     }
 
 
@@ -144,6 +145,7 @@ public class Typist
         this.isBurned = false;
         this.burnTurns = 0;
         this.currentProgress = 0;
+        this.ifMistype = false;
     }
 
     /**
@@ -207,10 +209,10 @@ public class Typist
     public void setAccuracy(double newAccuracy)
     {
         if (newAccuracy < 0.0) {
-            this.typistAccuracy = 0.0;
+            newAccuracy = 0.0;
         }
         else if (newAccuracy > 1.0) {
-            this.typistAccuracy = 1.0;
+            newAccuracy = 1.0;
         }
 
         newAccuracy = Math.round(newAccuracy * 100.0) / 100.0;

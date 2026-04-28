@@ -11,13 +11,13 @@ public class RaceScreen extends JPanel {
     private JTextPane textPane;
     private StyledDocument doc;
 
-    private Style typingStyle;
-    private Style finishedStyle;
-
     private JLabel name;
     private JLabel accuracy;
     private JLabel progress;
     private JLabel statusLabel;
+
+    private Style originalStyle;
+    private Style completeStyle;
 
     public RaceScreen() {
         System.out.println("RaceScreen loaded");
@@ -41,11 +41,11 @@ public class RaceScreen extends JPanel {
 
         doc = textPane.getStyledDocument();
 
-        typingStyle = textPane.addStyle("Typing", null);
-        StyleConstants.setForeground(typingStyle, new Color(0xada998));
+        originalStyle = textPane.addStyle("Original", null);
+        StyleConstants.setForeground(originalStyle, new Color(0xada998));
 
-        finishedStyle = textPane.addStyle("Finished", null);
-        StyleConstants.setForeground(finishedStyle, Color.WHITE);
+        completeStyle = textPane.addStyle("Complete", null);
+        StyleConstants.setForeground(completeStyle, new Color(0x7d7c7a));
 
         add(textPane, BorderLayout.CENTER);
 
@@ -137,18 +137,12 @@ public class RaceScreen extends JPanel {
             // typed text
             doc.insertString(0,
                     passage.substring(0, progress),
-                    typingStyle);
+                    completeStyle);
 
             // remaining text
             doc.insertString(doc.getLength(),
                     passage.substring(progress),
-                    null);
-
-            // finished state
-            if (t.getProgress() >= passage.length()) {
-                doc.remove(0, doc.getLength());
-                doc.insertString(0, passage, finishedStyle);
-            }
+                    originalStyle);
 
         } catch (BadLocationException e) {
             e.printStackTrace();

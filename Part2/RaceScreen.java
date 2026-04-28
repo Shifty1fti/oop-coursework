@@ -30,14 +30,12 @@ public class RaceScreen extends JPanel {
         // TEXT AREA
         textPane = new JTextPane();
         textPane.setEditable(false);
-        textPane.setFont(new Font("Monospaced", Font.BOLD, 22));
+        textPane.setFont(new Font("Monospaced", Font.BOLD, 30));
         textPane.setBackground(new Color(0xeae4cf));
 
         // CARET which is used for cursor system
         textPane.setCaretColor(new Color(0xada998));
         textPane.setCaretPosition(0);
-
-        add(infoPanel(race.getTypists().get(0)), BorderLayout.NORTH);
 
         doc = textPane.getStyledDocument();
 
@@ -47,9 +45,35 @@ public class RaceScreen extends JPanel {
         completeStyle = textPane.addStyle("Complete", null);
         StyleConstants.setForeground(completeStyle, new Color(0x7d7c7a));
 
-        add(textPane, BorderLayout.CENTER);
+        
+
+        setLayout(new BorderLayout());
+
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        wrapper.setBackground(new Color(0xeae4cf));
+        wrapper.setBorder(BorderFactory.createEmptyBorder(100, 150, 0, 0));
+        wrapper.add(createRow(race.getTypists().get(0)));
+
+        add(wrapper, BorderLayout.CENTER);
 
         startRace();
+    }
+
+    private JPanel createRow(Typist t) {
+        JPanel row = new JPanel(new BorderLayout());
+        row.setBackground(new Color(0xeae4cf));
+
+        JPanel infoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        infoWrapper.setBackground(new Color(0xeae4cf));
+
+        JPanel info = infoPanel(t);
+        infoWrapper.add(info);
+
+        row.add(infoWrapper, BorderLayout.WEST);
+
+        row.add(textPane, BorderLayout.CENTER);
+
+        return row;
     }
 
     // logic which starts the race and updates text and cursor every 0.2 seconds for the typist
@@ -70,8 +94,11 @@ public class RaceScreen extends JPanel {
 
     private JPanel infoPanel(Typist t) {
         JPanel info = new JPanel();
-        info.setLayout(new GridLayout(0, 1));
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(new Color(0xeae4cf));
+        info.setPreferredSize(new Dimension(250, 120));
+        info.setMaximumSize(new Dimension(250, 120));
+        info.setMinimumSize(new Dimension(250, 120));
 
         name = new JLabel(t.getName());
         accuracy = new JLabel("Accuracy: " + t.getAccuracy());
@@ -91,7 +118,7 @@ public class RaceScreen extends JPanel {
 
         statusLabel = new JLabel(status);
 
-        Font font = new Font("Monospaced", Font.BOLD, 16);
+        Font font = new Font("Monospaced", Font.BOLD, 22);
 
         name.setFont(font);
         accuracy.setFont(font);

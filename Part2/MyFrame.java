@@ -1,4 +1,3 @@
-import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
@@ -11,7 +10,9 @@ public class MyFrame extends JFrame {
 
         ImageIcon image = new ImageIcon("image.png"); // creates image icon
         this.setIconImage(image.getImage()); // loads icon and sets
-        this.getContentPane().setBackground(new Color(0xeae4cf));
+
+        this.setContentPane(new RaceScreen());
+
         this.setVisible(true);
     }
 }

@@ -14,6 +14,11 @@ public class RaceScreen extends JPanel {
     private Style typingStyle;
     private Style finishedStyle;
 
+    private JLabel name;
+    private JLabel accuracy;
+    private JLabel progress;
+    private JLabel statusLabel;
+
     public RaceScreen() {
         System.out.println("RaceScreen loaded");
 
@@ -31,6 +36,8 @@ public class RaceScreen extends JPanel {
         // CARET which is used for cursor system
         textPane.setCaretColor(new Color(0xada998));
         textPane.setCaretPosition(0);
+
+        add(infoPanel(race.getTypists().get(0)), BorderLayout.NORTH);
 
         doc = textPane.getStyledDocument();
 
@@ -51,6 +58,7 @@ public class RaceScreen extends JPanel {
             race.advance();
             updateText();
             updateCursor();
+            updateInfo();
 
             if (race.isFinished()) {
                 ((Timer) e.getSource()).stop();
@@ -58,6 +66,64 @@ public class RaceScreen extends JPanel {
         });
 
         timer.start();
+    }
+
+    private JPanel infoPanel(Typist t) {
+        JPanel info = new JPanel();
+        info.setLayout(new GridLayout(0, 1));
+        info.setBackground(new Color(0xeae4cf));
+
+        name = new JLabel(t.getName());
+        accuracy = new JLabel("Accuracy: " + t.getAccuracy());
+        progress = new JLabel("Progress: " + t.getProgress() + "/" + passage.length());
+
+        String status;
+
+        if (t.getProgress() >= passage.length()) {
+            status = "Finished";
+        }
+        else if (t.isBurntOut()) {
+            status = "Burned: " + t.getBurnoutTurnsRemaining() + " turns remaining";
+        }
+        else {
+            status = "Typing";
+        }
+
+        statusLabel = new JLabel(status);
+
+        Font font = new Font("Monospaced", Font.BOLD, 16);
+
+        name.setFont(font);
+        accuracy.setFont(font);
+        progress.setFont(font);
+        statusLabel.setFont(font);
+
+        info.add(name);
+        info.add(accuracy);
+        info.add(progress);
+        info.add(statusLabel);
+
+        return info;
+    }
+
+    private void updateInfo() {
+        Typist t = race.getTypists().get(0);
+        
+        progress.setText("Progress: " + t.getProgress() + "/" + passage.length());
+
+        String statusInfo;
+
+        if (t.getProgress() >= passage.length()) {
+            statusInfo = "Finished";
+        }
+        else if (t.isBurntOut()) {
+            statusInfo = "Burned: " + t.getBurnoutTurnsRemaining() + " turns remaining";
+        }
+        else {
+            statusInfo = "Typing";
+        }
+
+        statusLabel.setText(statusInfo);
     }
 
     // logic used to update the text
@@ -94,10 +160,11 @@ public class RaceScreen extends JPanel {
         Typist t = race.getTypists().get(0);
 
         // THIS is the key line
+        textPane.getCaret().setVisible(true);
         textPane.setCaretPosition(t.getProgress());
         
         if (t.getProgress() >= passage.length()) {
-            textPane.setCaret(null);
+            textPane.getCaret().setVisible(false);
         }
     }
 }

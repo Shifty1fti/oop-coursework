@@ -2,76 +2,86 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+
 public class RaceScreen extends JPanel {
 
     private TypingRace race;
 
     private String passage = "the quick brown fox jumped over the lazy fence";
 
-    private JTextPane textPane;
-    private StyledDocument doc;
+    private JTextPane[] textPanes;
+    private StyledDocument[] docs;
 
-    private JLabel name;
-    private JLabel accuracy;
-    private JLabel progress;
-    private JLabel statusLabel;
+    private JLabel[] nameLabels;
+    private JLabel[] accuracyLabels;
+    private JLabel[] progressLabels;
+    private JLabel[] statusLabels;
 
-    private Style originalStyle;
-    private Style completeStyle;
+    private Style[] originalStyle;
+    private Style[] completeStyle;
 
     public RaceScreen() {
         System.out.println("RaceScreen loaded");
 
+        race = new TypingRace(passage.length());
+        int numTypists = race.getTypists().size();
+
+
         setBackground(new Color(0xeae4cf));
         setLayout(new BorderLayout());
 
-        race = new TypingRace(passage.length());
+        nameLabels = new JLabel[numTypists];
+        accuracyLabels = new JLabel[numTypists];
+        progressLabels = new JLabel[numTypists];
+        statusLabels = new JLabel[numTypists];
 
-        // TEXT AREA
-        textPane = new JTextPane();
-        textPane.setEditable(false);
-        textPane.setFont(new Font("Monospaced", Font.BOLD, 30));
-        textPane.setBackground(new Color(0xeae4cf));
-
-        // CARET which is used for cursor system
-        textPane.setCaretColor(new Color(0xada998));
-        textPane.setCaretPosition(0);
-
-        doc = textPane.getStyledDocument();
-
-        originalStyle = textPane.addStyle("Original", null);
-        StyleConstants.setForeground(originalStyle, new Color(0xada998));
-
-        completeStyle = textPane.addStyle("Complete", null);
-        StyleConstants.setForeground(completeStyle, new Color(0x7d7c7a));
-
+        textPanes = new JTextPane[numTypists];
+        docs = new StyledDocument[numTypists];
+        originalStyle = new Style[numTypists];
+        completeStyle = new Style[numTypists];
         
-
-        setLayout(new BorderLayout());
-
-        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel wrapper = new JPanel(new GridLayout(numTypists, 1));
         wrapper.setBackground(new Color(0xeae4cf));
         wrapper.setBorder(BorderFactory.createEmptyBorder(100, 150, 0, 0));
-        wrapper.add(createRow(race.getTypists().get(0)));
+        
+        for (int i = 0; i < numTypists; i++) {
+            wrapper.add(createRow(race.getTypists().get(i), i));
+        }
 
         add(wrapper, BorderLayout.CENTER);
 
+        updateText();
+        updateCursor();
+        updateInfo();
         startRace();
     }
 
-    private JPanel createRow(Typist t) {
+    private JPanel createRow(Typist t, int index) {
         JPanel row = new JPanel(new BorderLayout());
         row.setBackground(new Color(0xeae4cf));
 
         JPanel infoWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         infoWrapper.setBackground(new Color(0xeae4cf));
 
-        JPanel info = infoPanel(t);
+        JPanel info = infoPanel(t, index);
         infoWrapper.add(info);
 
         row.add(infoWrapper, BorderLayout.WEST);
 
-        row.add(textPane, BorderLayout.CENTER);
+        textPanes[index] = new JTextPane();
+        textPanes[index].setEditable(false);
+        textPanes[index].setFont(new Font("Monospaced", Font.BOLD, 30));
+        textPanes[index].setBackground(new Color(0xeae4cf));
+        textPanes[index].setCaretColor(new Color(0xada998));
+        docs[index] = textPanes[index].getStyledDocument();
+        
+        originalStyle[index] = textPanes[index].addStyle("Original", null);
+        StyleConstants.setForeground(originalStyle[index], new Color(0xada998));
+        
+        completeStyle[index] = textPanes[index].addStyle("Complete", null);
+        StyleConstants.setForeground(completeStyle[index], new Color(0x7d7c7a));
+
+        row.add(textPanes[index], BorderLayout.CENTER);
 
         return row;
     }
@@ -92,7 +102,7 @@ public class RaceScreen extends JPanel {
         timer.start();
     }
 
-    private JPanel infoPanel(Typist t) {
+    private JPanel infoPanel(Typist t, int index) {
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(new Color(0xeae4cf));
@@ -100,9 +110,9 @@ public class RaceScreen extends JPanel {
         info.setMaximumSize(new Dimension(250, 120));
         info.setMinimumSize(new Dimension(250, 120));
 
-        name = new JLabel(t.getName());
-        accuracy = new JLabel("Accuracy: " + t.getAccuracy());
-        progress = new JLabel("Progress: " + t.getProgress() + "/" + passage.length());
+        nameLabels[index] = new JLabel(t.getName() + ": " + t.getSymbol());
+        accuracyLabels[index] = new JLabel("Accuracy: " + t.getAccuracy());
+        progressLabels[index] = new JLabel("Progress: " + t.getProgress() + "/" + passage.length());
 
         String status;
 
@@ -116,76 +126,88 @@ public class RaceScreen extends JPanel {
             status = "Typing";
         }
 
-        statusLabel = new JLabel(status);
+        statusLabels[index] = new JLabel(status);
 
         Font font = new Font("Monospaced", Font.BOLD, 22);
 
-        name.setFont(font);
-        accuracy.setFont(font);
-        progress.setFont(font);
-        statusLabel.setFont(font);
+        nameLabels[index].setFont(font);
+        accuracyLabels[index].setFont(font);
+        progressLabels[index].setFont(font);
+        statusLabels[index].setFont(font);
 
-        info.add(name);
-        info.add(accuracy);
-        info.add(progress);
-        info.add(statusLabel);
+        nameLabels[index].setForeground(new Color(0xada998));
+        accuracyLabels[index].setForeground(new Color(0xada998));
+        progressLabels[index].setForeground(new Color(0xada998));
+        statusLabels[index].setForeground(new Color(0xada998));
+
+        info.add(nameLabels[index]);
+        info.add(accuracyLabels[index]);
+        info.add(progressLabels[index]);
+        info.add(statusLabels[index]);
 
         return info;
     }
 
     private void updateInfo() {
-        Typist t = race.getTypists().get(0);
+        for (int i = 0; i < race.getTypists().size(); i++) {
+            Typist t = race.getTypists().get(i);
         
-        progress.setText("Progress: " + t.getProgress() + "/" + passage.length());
+            progressLabels[i].setText("Progress: " + t.getProgress() + "/" + passage.length());
 
-        String statusInfo;
+            String status;
 
-        if (t.getProgress() >= passage.length()) {
-            statusInfo = "Finished";
-        }
-        else if (t.isBurntOut()) {
-            statusInfo = "Burned: " + t.getBurnoutTurnsRemaining() + " turns remaining";
-        }
-        else {
-            statusInfo = "Typing";
-        }
+            if (t.getProgress() >= passage.length()) {
+                status = "Finished";
+            }
+            else if (t.isBurntOut()) {
+                status = "Burned: " + t.getBurnoutTurnsRemaining() + " turns remaining";
+            }
+            else {
+                status = "Typing";
+            }
 
-        statusLabel.setText(statusInfo);
+            statusLabels[i].setText(status);
+        }
     }
 
     // logic used to update the text
     private void updateText() {
-        try {
-            doc.remove(0, doc.getLength());
+        for (int i = 0; i < race.getTypists().size(); i++) {
+            Typist t = race.getTypists().get(i);
+            try {
+                docs[i].remove(0, docs[i].getLength());
 
-            Typist t = race.getTypists().get(0);
-            int progress = Math.min(t.getProgress(), passage.length());
 
-            // typed text
-            doc.insertString(0,
+                int progress = Math.min(t.getProgress(), passage.length());
+
+                // typed text
+                docs[i].insertString(0,
                     passage.substring(0, progress),
-                    completeStyle);
+                    completeStyle[i]);
 
-            // remaining text
-            doc.insertString(doc.getLength(),
-                    passage.substring(progress),
-                    originalStyle);
+                // remaining text
+                docs[i].insertString(docs[i].getLength(),
+                        passage.substring(progress),
+                        originalStyle[i]);
 
-        } catch (BadLocationException e) {
-            e.printStackTrace();
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     // updates the cursor depending on the current position of the typist
     private void updateCursor() {
-        Typist t = race.getTypists().get(0);
+        for (int i = 0; i < race.getTypists().size(); i++) {
+            Typist t = race.getTypists().get(i);
 
-        // THIS is the key line
-        textPane.getCaret().setVisible(true);
-        textPane.setCaretPosition(t.getProgress());
-        
-        if (t.getProgress() >= passage.length()) {
-            textPane.getCaret().setVisible(false);
+            // THIS is the key line
+            textPanes[i].getCaret().setVisible(true);
+            textPanes[i].setCaretPosition(t.getProgress());
+            
+            if (t.getProgress() >= passage.length()) {
+                textPanes[i].getCaret().setVisible(false);
+            }
         }
     }
 }

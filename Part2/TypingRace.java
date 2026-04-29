@@ -24,6 +24,11 @@ public class TypingRace
         this.passageLength = passageLength;
         this.typists = new ArrayList<>();
         typists.add(new Typist('?', "ifti", 0.9));
+        typists.add(new Typist('2', "iftikhar", 0.91));
+        typists.add(new Typist('?', "ifti", 0.9));
+        typists.add(new Typist('2', "iftikhar", 0.91));
+        typists.add(new Typist('?', "ifti", 0.9));
+        typists.add(new Typist('2', "iftikhar", 0.91));
     }
 
     public void advance() { // loops through and advances every typist passed 

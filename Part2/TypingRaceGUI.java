@@ -1,4 +1,3 @@
-
 // main class which runs the program
 public class TypingRaceGUI {
 

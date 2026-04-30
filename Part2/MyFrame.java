@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
@@ -7,6 +8,7 @@ public class MyFrame extends JFrame {
     private SettingScreen settingScreen;
     private RaceScreen raceScreen;
     private GameSettings settings;
+    private TypistScreen typistScreen;
 
     public MyFrame() {
         setSize(2880, 1800);
@@ -21,13 +23,12 @@ public class MyFrame extends JFrame {
 
         // method called which originally is run
         showSettings();
-
         setVisible(true);
     }
 
     // runs settings screen
     public void showSettings() {
-        settingScreen = new SettingScreen(settings, () -> showRace());
+        settingScreen = new SettingScreen(settings, () -> showTypists());
 
         setContentPane(settingScreen);
 
@@ -35,9 +36,23 @@ public class MyFrame extends JFrame {
         repaint();
     }
 
+    // runs typist screen
+    public void showTypists() {
+        typistScreen = new TypistScreen(settings, () -> showRace());
+
+        setContentPane(typistScreen);
+        revalidate();
+        repaint();
+    }
+
     // runs race screen
     public void showRace() {
-        raceScreen = new RaceScreen(settings, () -> showSettings());
+
+        settings.setPassage(settings.generate());
+
+        ArrayList<Typist> typists = typistScreen.buildTypists();
+
+        raceScreen = new RaceScreen(settings,typists, () -> showSettings());
 
         setContentPane(raceScreen);
 

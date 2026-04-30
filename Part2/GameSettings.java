@@ -1,5 +1,5 @@
-import java.util.Random;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameSettings {
 
@@ -56,13 +56,6 @@ public class GameSettings {
         autocorrect = false;
         caffeine = false;
         night = false;
-
-        typistSettingsList = new ArrayList<>();
-
-        for (int i = 0; i < playerAmount; i++) {
-            typistSettingsList.add(new TypistSettings());
-        }
-
 
     }
 

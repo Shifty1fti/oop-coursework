@@ -22,6 +22,7 @@ public class Typist
     private boolean isBurned;
     private int burnTurns;
     private boolean ifMistype; // attribute that checks on each turn if the typist has entered an incorrect input
+    private double burnoutModifier;
 
 
 
@@ -44,6 +45,7 @@ public class Typist
         this.isBurned = false;
         this.burnTurns = 0;
         this.ifMistype = false;
+        this.burnoutModifier = 1.0;
     }
 
 
@@ -58,7 +60,7 @@ public class Typist
     public void burnOut(int turns)
     {
         this.isBurned = true;
-	    this.burnTurns = turns;
+	    this.burnTurns = Math.max(1, (int)(turns * this.burnoutModifier));
     }
 
     /**
@@ -74,6 +76,24 @@ public class Typist
                 this.isBurned = false;
             }
         }
+    }
+
+    /**
+     * Sets the burnout modifier for this typist.
+     * Modifies how long burnout effects last.
+     *
+     * @param modifier the multiplier for burnout duration
+     */
+    public void setBurnoutModifier(double modifier)
+    {
+        if (modifier < 0.2) {
+            modifier = 0.2;
+        }
+        if (modifier > 3.0) {
+            modifier = 3.0;
+        }
+        
+        this.burnoutModifier = modifier;
     }
 
     /**
@@ -228,6 +248,10 @@ public class Typist
     public void setSymbol(char newSymbol)
     {
         this.typistSymbol = newSymbol;
+    }
+
+    public double getBurnoutModifier() {
+        return this.burnoutModifier;
     }
 
 }

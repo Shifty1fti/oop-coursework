@@ -1,11 +1,12 @@
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.text.*;
-
 
 // class that creates the game screen where it is run
 public class RaceScreen extends JPanel {
 
+    private ArrayList<Typist> typists;
     private TypingRace race;
     private GameSettings settings;
     private Runnable onFinish;
@@ -24,15 +25,17 @@ public class RaceScreen extends JPanel {
     
     
     // constructor method that displays all the pages 
-    public RaceScreen(GameSettings settings, Runnable onFinish) {
+    public RaceScreen(GameSettings settings,ArrayList<Typist> typists, Runnable onFinish) {
 
         this.settings = settings;
         this.passage = settings.getPassage();
         this.onFinish = onFinish;
+        this.typists = typists;
+        
 
         // creates a new race and retrieves amount of typists
-        race = new TypingRace(passage.length(), settings);
-        int numTypists = settings.getAmount();
+        race = new TypingRace(passage.length(), settings, typists);
+        int numTypists = typists.size();
 
 
         // adds information label to the left side of the row
@@ -56,7 +59,7 @@ public class RaceScreen extends JPanel {
         wrapper.setBorder(BorderFactory.createEmptyBorder(100, 150, 0, 0));
         
         for (int i = 0; i < numTypists; i++) {
-            wrapper.add(createRow(race.getTypists().get(i), i));
+            wrapper.add(createRow(typists.get(i), i));
         }
 
         add(wrapper, BorderLayout.CENTER);
@@ -170,8 +173,8 @@ public class RaceScreen extends JPanel {
 
     // updates progress and users state 
     private void updateInfo() {
-        for (int i = 0; i < race.getTypists().size(); i++) {
-            Typist t = race.getTypists().get(i);
+        for (int i = 0; i < typists.size(); i++) {
+            Typist t = typists.get(i);
         
             progressLabels[i].setText("Progress: " + t.getProgress() + "/" + passage.length());
 
@@ -193,8 +196,8 @@ public class RaceScreen extends JPanel {
 
     // logic used to update the text of the round
     private void updateText() {
-        for (int i = 0; i < race.getTypists().size(); i++) {
-            Typist t = race.getTypists().get(i);
+        for (int i = 0; i < typists.size(); i++) {
+            Typist t = typists.get(i);
             try {
                 docs[i].remove(0, docs[i].getLength());
 
@@ -219,8 +222,8 @@ public class RaceScreen extends JPanel {
 
     // updates the cursor depending on the current position of the typist
     private void updateCursor() {
-        for (int i = 0; i < race.getTypists().size(); i++) {
-            Typist t = race.getTypists().get(i);
+        for (int i = 0; i < typists.size(); i++) {
+            Typist t = typists.get(i);
 
             // THIS is the key line
             textPanes[i].getCaret().setVisible(true);

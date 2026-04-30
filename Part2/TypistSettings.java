@@ -85,6 +85,7 @@ public class TypistSettings {
 
         Typist typist = new Typist(symbol, this.name, accuracy);
         typist.setBurnoutModifier(burnoutAmount);
+        typist.setColour(this.colour);
         return typist;
 
     }

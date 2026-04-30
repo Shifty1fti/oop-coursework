@@ -56,6 +56,7 @@ public class TypistScreen extends JPanel {
         wrapper.add(keyboardRow());
         wrapper.add(settingsRow());
         wrapper.add(buttonRow());
+        wrapper.add(startRow());
 
         center.add(wrapper);
         add(center, BorderLayout.CENTER);
@@ -136,7 +137,7 @@ public class TypistScreen extends JPanel {
 
         colourPreview = new JPanel();
         colourPreview.setPreferredSize(new Dimension(50, 50));
-        colourPreview.setBackground(new Color(0xada998));
+        colourPreview.setBackground(new Color(0x7d7c7a));
         
         selectedColour = new Color(0xada998);
 
@@ -247,6 +248,25 @@ public class TypistScreen extends JPanel {
         return row;
     }
 
+    private JPanel startRow() {
+        JPanel row = new JPanel();
+        row.setBackground(new Color(0xeae4cf));
+
+        JButton startButton = new JButton("Start Race");
+        startButton.setFont(new Font("Monospaced", Font.BOLD, 22));
+        startButton.setBackground(new Color(0xeae4cf));
+        startButton.setForeground(new Color(0xada998));
+
+        startButton.addActionListener(e -> {
+            saveTypist();
+            onStart.run();
+        });
+
+        row.add(startButton);
+        return row;
+    }
+
+
     // method which contains logic to apply a certain typists information to the screen  that is previously saved
     private void loadSelected () {
         int i = select.getSelectedIndex();
@@ -336,7 +356,7 @@ public class TypistScreen extends JPanel {
                 "Touch Typist",
                 "Mechanical",
                 (char) ('A' + i),
-                new Color(0xada998),
+                new Color(0x7d7c7a),
                 false,
                 false,
                 false

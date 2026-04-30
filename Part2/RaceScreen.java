@@ -89,7 +89,7 @@ public class RaceScreen extends JPanel {
         textPanes[index].setEditable(false);
         textPanes[index].setFont(new Font("Monospaced", Font.BOLD, 30));
         textPanes[index].setBackground(new Color(0xeae4cf));
-        textPanes[index].setCaretColor(new Color(0xada998));
+        textPanes[index].setCaretColor(t.getColour());
         docs[index] = textPanes[index].getStyledDocument();
         
         // text style to differentiate between incomplete and complete text
@@ -97,7 +97,7 @@ public class RaceScreen extends JPanel {
         StyleConstants.setForeground(originalStyle[index], new Color(0xada998));
         
         completeStyle[index] = textPanes[index].addStyle("Complete", null);
-        StyleConstants.setForeground(completeStyle[index], new Color(0x7d7c7a));
+        StyleConstants.setForeground(completeStyle[index], t.getColour());
 
         row.add(textPanes[index], BorderLayout.CENTER);
 
@@ -133,7 +133,7 @@ public class RaceScreen extends JPanel {
 
         // displays information
         nameLabels[index] = new JLabel(t.getName() + ": " + t.getSymbol());
-        accuracyLabels[index] = new JLabel("Accuracy: " + t.getAccuracy());
+        accuracyLabels[index] = new JLabel("Accuracy: " + String.format("%.2f",t.getAccuracy()));
         progressLabels[index] = new JLabel("Progress: " + t.getProgress() + "/" + passage.length());
 
         String status;

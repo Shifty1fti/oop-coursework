@@ -1,3 +1,5 @@
+import java.awt.*;
+
 /**
  * Typist class which is used as an object with all the attributes that need to be tracked being the symbol, name, accuracy, progress, the state of burnout, and how long they have been burned.
  * There are getter and setter methods which are used to encapsulate the data and privatise how it is handled
@@ -23,6 +25,7 @@ public class Typist
     private int burnTurns;
     private boolean ifMistype; // attribute that checks on each turn if the typist has entered an incorrect input
     private double burnoutModifier;
+    private Color colour; // assigning colour to typist for the text
 
 
 
@@ -92,7 +95,7 @@ public class Typist
         if (modifier > 3.0) {
             modifier = 3.0;
         }
-        
+
         this.burnoutModifier = modifier;
     }
 
@@ -252,6 +255,17 @@ public class Typist
 
     public double getBurnoutModifier() {
         return this.burnoutModifier;
+    }
+
+
+    // setter method that assigns variable to colour
+    public void setColour(Color colour) {
+        this.colour = colour;
+    }
+
+    // getter method that retrieves colour from object
+    public Color getColour() {
+        return this.colour;
     }
 
 }

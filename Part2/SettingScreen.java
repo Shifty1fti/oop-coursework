@@ -40,7 +40,7 @@ public class SettingScreen extends JPanel {
         wrapper.add(settingsRow());
 
         // button created which submits the information using action listener
-        JButton submit = new JButton("Start Race");
+        JButton submit = new JButton("Player Settings");
         submit.setFont(new Font("Monospaced", Font.BOLD, 22));
         submit.setBackground(new Color(0xeae4cf));
         submit.setForeground(new Color(0xada998));

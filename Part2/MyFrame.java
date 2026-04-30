@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 // class which is used to run the other pages
 public class MyFrame extends JFrame {
 
+    private StartupScreen startupScreen;
     private SettingScreen settingScreen;
     private RaceScreen raceScreen;
     private GameSettings settings;
@@ -22,8 +23,24 @@ public class MyFrame extends JFrame {
         settings = new GameSettings();
 
         // method called which originally is run
-        showSettings();
+        showStartup();
         setVisible(true);
+    }
+
+    public void showStartup() {
+        startupScreen = new StartupScreen(
+            () -> showSettings(),
+            () -> showLeaderboard(),
+            () -> System.exit(0)
+        );
+
+        setContentPane(startupScreen);
+        revalidate();
+        repaint();
+    }
+
+    public void showLeaderboard() {
+        System.out.println("Placeholder");
     }
 
     // runs settings screen

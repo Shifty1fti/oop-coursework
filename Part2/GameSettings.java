@@ -1,6 +1,10 @@
 import java.util.Random;
+import java.util.ArrayList;
 
 public class GameSettings {
+
+    private ArrayList<TypistSettings> typistSettingsList;
+
     private int playerAmount;
     private String passageType;
 
@@ -8,6 +12,7 @@ public class GameSettings {
     private boolean caffeine;
     private boolean night;
 
+    // set passages that are randomly picked for short medium and large
     private static final String[] shortPassage = {
         "The quick brown fox jumped over the lazy fence.",
         "Never put off until tomorrow what can be done today.",
@@ -38,10 +43,12 @@ public class GameSettings {
         "Never speak of yourself to others; make them talk about themselves instead; therein lies the whole art of pleasing. Everybody knows it, and everyone forgets it."
     };
 
+    // placeholder variable for custom passage
     private String customPassage = "Never put off until tomorrow what can be done today";
 
     private String passage;
 
+    // constructor method which represents base settings
     public GameSettings() {
         playerAmount = 2;
         passageType = "Short";
@@ -49,48 +56,67 @@ public class GameSettings {
         autocorrect = false;
         caffeine = false;
         night = false;
+
+        typistSettingsList = new ArrayList<>();
+
+        for (int i = 0; i < playerAmount; i++) {
+            typistSettingsList.add(new TypistSettings());
+        }
+
+
     }
 
+    // method that returns amount of players in settings
     public int getAmount() {
         return playerAmount;
     }
 
+    // method that returns passage type in settings 
     public String getType() {
         return passageType;
     }
 
+    // method that returns boolean value of autocorrect
     public boolean getAutocorrect() {
         return autocorrect;
     }
 
+    // method that returns boolean value of caffeine
     public boolean getCaffeine() {
         return caffeine;
     }
 
+    // method that returns boolean value of night
     public boolean getNight() {
         return night;
     }
 
+    // method that assigns value of player to settings
     public void setAmount(int amount) {
         this.playerAmount = amount;
     }
 
+    // method that assigns passage type to settings
     public void setType(String type) {
         this.passageType = type;
     }
 
+    // method that assigns value of autocorrect to settings
     public void setAutocorrect(boolean autocorrect) {
         this.autocorrect = autocorrect;
     }
 
+    // method that assigns value of caffeine to settings
     public void setCaffeine(boolean caffeine) {
         this.caffeine = caffeine;
     }
 
+    // method that assigns value of night to settings
     public void setNight(boolean night) {
         this.night = night;
     }
 
+    // method that randomly generates a passage from array based on option passed through
     public String generate() {
         Random random = new Random();
 
@@ -112,18 +138,22 @@ public class GameSettings {
         
     }
 
+    // method that assigns value of custom passage to settings
     public void setCustom(String text) {
         this.customPassage = text;
     }
 
+    // method that returns custom passage in settings 
     public String getCustom() {
         return this.customPassage;
     }
 
+    // method that assigns value of passage type to settings
     public void setPassage(String text) {
         this.passage= text;
     }
 
+    // method that returns passage in settings
     public String getPassage() {
         return this.passage;
     }

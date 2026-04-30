@@ -3,11 +3,13 @@ import javax.swing.*;
 import javax.swing.text.*;
 
 
+// class that creates the game screen where it is run
 public class RaceScreen extends JPanel {
 
     private TypingRace race;
-
-    private String passage = "the quick brown fox jumped over the lazy fence";
+    private GameSettings settings;
+    private Runnable onFinish;
+    private String passage;
 
     private JTextPane[] textPanes;
     private StyledDocument[] docs;
@@ -19,14 +21,21 @@ public class RaceScreen extends JPanel {
 
     private Style[] originalStyle;
     private Style[] completeStyle;
+    
+    
+    // constructor method that displays all the pages 
+    public RaceScreen(GameSettings settings, Runnable onFinish) {
 
-    public RaceScreen() {
-        System.out.println("RaceScreen loaded");
+        this.settings = settings;
+        this.passage = settings.getPassage();
+        this.onFinish = onFinish;
 
-        race = new TypingRace(passage.length());
-        int numTypists = race.getTypists().size();
+        // creates a new race and retrieves amount of typists
+        race = new TypingRace(passage.length(), settings);
+        int numTypists = settings.getAmount();
 
 
+        // adds information label to the left side of the row
         setBackground(new Color(0xeae4cf));
         setLayout(new BorderLayout());
 
@@ -35,11 +44,13 @@ public class RaceScreen extends JPanel {
         progressLabels = new JLabel[numTypists];
         statusLabels = new JLabel[numTypists];
 
+        // adds text label to right side of the row
         textPanes = new JTextPane[numTypists];
         docs = new StyledDocument[numTypists];
         originalStyle = new Style[numTypists];
         completeStyle = new Style[numTypists];
         
+        // wraps labels into a grid
         JPanel wrapper = new JPanel(new GridLayout(numTypists, 1));
         wrapper.setBackground(new Color(0xeae4cf));
         wrapper.setBorder(BorderFactory.createEmptyBorder(100, 150, 0, 0));
@@ -50,12 +61,14 @@ public class RaceScreen extends JPanel {
 
         add(wrapper, BorderLayout.CENTER);
 
+        // initialises the game
         updateText();
         updateCursor();
         updateInfo();
         startRace();
     }
 
+    // method that returns the game text row for typists 
     private JPanel createRow(Typist t, int index) {
         JPanel row = new JPanel(new BorderLayout());
         row.setBackground(new Color(0xeae4cf));
@@ -68,6 +81,7 @@ public class RaceScreen extends JPanel {
 
         row.add(infoWrapper, BorderLayout.WEST);
 
+        // creates a text pane to store the text
         textPanes[index] = new JTextPane();
         textPanes[index].setEditable(false);
         textPanes[index].setFont(new Font("Monospaced", Font.BOLD, 30));
@@ -75,6 +89,7 @@ public class RaceScreen extends JPanel {
         textPanes[index].setCaretColor(new Color(0xada998));
         docs[index] = textPanes[index].getStyledDocument();
         
+        // text style to differentiate between incomplete and complete text
         originalStyle[index] = textPanes[index].addStyle("Original", null);
         StyleConstants.setForeground(originalStyle[index], new Color(0xada998));
         
@@ -94,14 +109,17 @@ public class RaceScreen extends JPanel {
             updateCursor();
             updateInfo();
 
+            // stops race and runs back to setting screen
             if (race.isFinished()) {
                 ((Timer) e.getSource()).stop();
+                onFinish.run();
             }
         });
 
         timer.start();
     }
 
+    // method which creates the info panel section on the left side of the row
     private JPanel infoPanel(Typist t, int index) {
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
@@ -110,12 +128,14 @@ public class RaceScreen extends JPanel {
         info.setMaximumSize(new Dimension(250, 120));
         info.setMinimumSize(new Dimension(250, 120));
 
+        // displays information
         nameLabels[index] = new JLabel(t.getName() + ": " + t.getSymbol());
         accuracyLabels[index] = new JLabel("Accuracy: " + t.getAccuracy());
         progressLabels[index] = new JLabel("Progress: " + t.getProgress() + "/" + passage.length());
 
         String status;
 
+        // logic which changes state of user in the round
         if (t.getProgress() >= passage.length()) {
             status = "Finished";
         }
@@ -148,6 +168,7 @@ public class RaceScreen extends JPanel {
         return info;
     }
 
+    // updates progress and users state 
     private void updateInfo() {
         for (int i = 0; i < race.getTypists().size(); i++) {
             Typist t = race.getTypists().get(i);
@@ -170,7 +191,7 @@ public class RaceScreen extends JPanel {
         }
     }
 
-    // logic used to update the text
+    // logic used to update the text of the round
     private void updateText() {
         for (int i = 0; i < race.getTypists().size(); i++) {
             Typist t = race.getTypists().get(i);

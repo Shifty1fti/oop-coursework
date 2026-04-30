@@ -12,6 +12,8 @@ public class TypingRace
 {
     private int passageLength;   // Total characters in the passage to type
     private ArrayList<Typist> typists; // Typist attributes which store all 3 typists
+    private GameSettings settings;
+    private int turn;
 
     // Accuracy thresholds for mistype and burnout events
     // (Ty tuned these values "by feel". They may need adjustment.)
@@ -19,22 +21,26 @@ public class TypingRace
     private static final int    SLIDE_BACK_AMOUNT   = 2;
     private static final int    BURNOUT_DURATION     = 3;
 
-    public TypingRace(int passageLength)
+    public TypingRace(int passageLength, GameSettings settings)
     {
         this.passageLength = passageLength;
         this.typists = new ArrayList<>();
-        typists.add(new Typist('?', "ifti", 0.9));
-        typists.add(new Typist('2', "iftikhar", 0.91));
-        typists.add(new Typist('?', "ifti", 0.9));
-        typists.add(new Typist('2', "iftikhar", 0.91));
-        typists.add(new Typist('?', "ifti", 0.9));
-        typists.add(new Typist('2', "iftikhar", 0.91));
+        // temporary assignment of typists
+        typists.add(new Typist('?', "ifti", 0.9, settings));
+        typists.add(new Typist('2', "iftikhar", 0.91, settings));
+        typists.add(new Typist('?', "ifti", 0.9, settings));
+        typists.add(new Typist('2', "iftikhar", 0.91, settings));
+        typists.add(new Typist('?', "ifti", 0.9, settings));
+        typists.add(new Typist('2', "iftikhar", 0.91, settings));
+        this.settings = settings;
+        this.turn = 0;
     }
 
     public void advance() { // loops through and advances every typist passed 
         for (Typist t: typists) {
             advanceTypist(t);
         }
+        turn++;
     }
 
     private void advanceTypist(Typist theTypist)
@@ -48,14 +54,24 @@ public class TypingRace
             return;
         }
 
+        double accuracy = theTypist.getAccuracy();
+
+        // logic which handles caffeine boost
+        if (settings.getCaffeine() && turn <= 10) {
+            accuracy *= 1.2;
+            if (accuracy > 1.0) {
+                accuracy = 1.0;
+            }
+        }
+
         // Attempt to type a character
-        if (Math.random() < theTypist.getAccuracy())
+        if (Math.random() < accuracy)
         {
             theTypist.typeCharacter();
         }
 
         // Mistype check — the probability should reflect the typist's accuracy
-        if (Math.random() < (1 - theTypist.getAccuracy()) * MISTYPE_BASE_CHANCE)
+        if (Math.random() < (1 - accuracy) * MISTYPE_BASE_CHANCE)
         {
             theTypist.slideBack(SLIDE_BACK_AMOUNT);
             theTypist.markMistype();
@@ -63,12 +79,21 @@ public class TypingRace
 
         // Burnout check — pushing too hard increases burnout risk
         // (probability scales with accuracy squared, capped at ~0.05)
-        if (Math.random() < (0.05 * theTypist.getAccuracy() * theTypist.getAccuracy()))
+
+        double burnoutChance = 0.05 * theTypist.getAccuracy() * theTypist.getAccuracy();
+
+        // logic which handles aftermath of caffeine burnout
+        if (settings.getCaffeine() && turn > 10) {
+            burnoutChance *= 2;
+        }
+
+        if (Math.random() < burnoutChance)
         {
             theTypist.burnOut(BURNOUT_DURATION);
         }
     }
 
+    // logic which checks if any single typist has won
     public boolean isFinished() {
         for (Typist t: typists) {
             if (t.getProgress() >= passageLength) {
@@ -78,14 +103,17 @@ public class TypingRace
         return false;
     }
 
+    // logic which returns the arraylist of typist
     public ArrayList<Typist> getTypists() {
         return typists;
     }
 
+    // logic which returns the total passage length
     public int getLength() {
         return passageLength;
     }
 
+    // logic which resets every typist back to the start
     public void reset() {
         for (Typist t: typists) {
             t.resetToStart();

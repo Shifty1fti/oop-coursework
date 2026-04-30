@@ -22,7 +22,7 @@ public class Typist
     private boolean isBurned;
     private int burnTurns;
     private boolean ifMistype; // attribute that checks on each turn if the typist has entered an incorrect input
-
+    private GameSettings settings;
 
 
 
@@ -35,7 +35,7 @@ public class Typist
      * @param typistName    the name of the typist (e.g. "TURBOFINGERS")
      * @param typistAccuracy the typist's accuracy rating, between 0.0 and 1.0
      */
-    public Typist(char typistSymbol, String typistName, double typistAccuracy)
+    public Typist(char typistSymbol, String typistName, double typistAccuracy, GameSettings settings)
     {
         this.typistSymbol = typistSymbol;
         this.typistName = typistName;
@@ -44,6 +44,7 @@ public class Typist
         this.isBurned = false;
         this.burnTurns = 0;
         this.ifMistype = false;
+        this.settings = settings;
     }
 
 
@@ -83,7 +84,17 @@ public class Typist
      */
     public double getAccuracy()
     {
-        return this.typistAccuracy;
+        double accuracy = this.typistAccuracy;
+
+        if (settings.getNight()) {
+            accuracy -= 0.1;
+        }
+
+        if (accuracy < 0.0) {
+            accuracy = 0.0;
+        }
+
+        return accuracy;
     }
 
     /**
@@ -193,9 +204,15 @@ public class Typist
             return;
         }
 
-        this.currentProgress -= amount;
+        int actualAmount = amount;
+        
+        if (settings.getAutocorrect()) {
+            actualAmount = amount / 2;
+        }
 
-        if (this.currentProgress < 0) { // Logic which clamps progress to 0 if negative
+        this.currentProgress -= actualAmount;
+
+        if (this.currentProgress < 0) {
             this.currentProgress = 0;
         }
     }

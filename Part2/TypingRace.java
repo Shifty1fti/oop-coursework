@@ -37,7 +37,7 @@ public class TypingRace
         turn++;
     }
 
-    private void advanceTypist(Typist theTypist)
+    public void advanceTypist(Typist theTypist)
     {
         theTypist.clearMistype(); // Resets state of mistype in every turn
 
@@ -121,5 +121,9 @@ public class TypingRace
         for (Typist t: typists) {
             t.resetToStart();
         }
+    }
+
+    public void incrementTurn() {
+        turn++;
     }
 }

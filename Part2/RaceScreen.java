@@ -124,6 +124,17 @@ public class RaceScreen extends JPanel {
                 ((Timer) e.getSource()).stop();
 
                 calculateResults();
+
+                String winner = results.get(0).getName();
+
+                // popup which indicates the winner
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Winner: " + winner,
+                    "Race Finished",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+
                 onFinish.run();
             }
         });

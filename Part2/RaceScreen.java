@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.text.*;
 
@@ -26,6 +27,8 @@ public class RaceScreen extends JPanel {
     
     // counts total amount of turns
     private int totalTurns = 0;
+
+    private HashMap<String, Integer> finishTurns = new HashMap<>();
 
     
     // constructor method that displays all the pages 
@@ -113,14 +116,26 @@ public class RaceScreen extends JPanel {
         Timer timer = new Timer(200, e -> {
 
             totalTurns++;
+            race.incrementTurn();
 
-            race.advance();
+            for (Typist t: typists) {
+                if (t.getProgress() < passage.length()) {
+                    race.advanceTypist(t);
+                }
+            }
+
+            for (Typist t: typists) {
+                if (t.getProgress() >= passage.length() && !finishTurns.containsKey(t.getName())) {
+                    finishTurns.put(t.getName(), totalTurns);
+                }
+            }
+
             updateText();
             updateCursor();
             updateInfo();
 
             // stops race and runs back to setting screen
-            if (race.isFinished()) {
+            if (allFinished()) {
                 ((Timer) e.getSource()).stop();
 
                 calculateResults();
@@ -221,18 +236,18 @@ public class RaceScreen extends JPanel {
             try {
                 docs[i].remove(0, docs[i].getLength());
 
-
                 int progress = Math.min(t.getProgress(), passage.length());
 
-                // typed text
                 docs[i].insertString(0,
                     passage.substring(0, progress),
                     completeStyle[i]);
 
-                // remaining text
-                docs[i].insertString(docs[i].getLength(),
+                // ADD: only show remaining text if not finished
+                if (progress < passage.length()) {
+                    docs[i].insertString(docs[i].getLength(),
                         passage.substring(progress),
                         originalStyle[i]);
+                }
 
             } catch (BadLocationException e) {
                 e.printStackTrace();
@@ -245,29 +260,29 @@ public class RaceScreen extends JPanel {
         for (int i = 0; i < typists.size(); i++) {
             Typist t = typists.get(i);
 
+            if (t.getProgress() >= passage.length()) {
+                textPanes[i].getCaret().setVisible(false);
+                continue;
+            }
             // THIS is the key line
             textPanes[i].getCaret().setVisible(true);
             textPanes[i].setCaretPosition(t.getProgress());
-            
-            if (t.getProgress() >= passage.length()) {
-                textPanes[i].getCaret().setVisible(false);
-            }
         }
     }
     
     // method that calculates final accuracy 
     private void calculateResults() {
-        double timeSeconds = totalTurns * 0.2;
-        double minutes = timeSeconds / 60.0;
-
         results.clear();
 
-        // Create results for each typist
         for (Typist t : typists) {
-            double wpm = (t.getProgress() / 5.0) / minutes;
+            // use per-typist finish time instead of totalTurns
+            int turns = finishTurns.getOrDefault(t.getName(), totalTurns);
+            double timeSeconds = turns * 0.2;
+            double minutes = timeSeconds / 60.0;
+
+            double wpm = Math.round((passage.length() / 5.0) / minutes);
             t.updateBestWPM(wpm);
 
-            // create result object
             Result r = new Result(
                 t.getName(),
                 0,
@@ -278,18 +293,19 @@ public class RaceScreen extends JPanel {
                 timeSeconds
             );
 
-            // link result with typist
             r.setTypist(t);
             results.add(r);
             t.getHistory().add(r);
         }
 
-        // Sort by progress
-        results.sort((a, b) -> 
-            b.getTypist().getProgress() - a.getTypist().getProgress()
-        );
+        // sort by finish time (fastest first)
+        results.sort((a, b) -> {
+            int turnsA = finishTurns.getOrDefault(a.getName(), totalTurns);
+            int turnsB = finishTurns.getOrDefault(b.getName(), totalTurns);
+            return Integer.compare(turnsA, turnsB);
+        });
 
-        // Assign positions + adjust accuracy
+        // assign positions + adjust accuracy
         for (int i = 0; i < results.size(); i++) {
             Result r = results.get(i);
             Typist t = r.getTypist();
@@ -310,12 +326,9 @@ public class RaceScreen extends JPanel {
 
             adjustment -= t.getBurnoutCount() * 0.02;
 
-            double newAccuracy = t.getAccuracy() + adjustment;
-            newAccuracy = Math.max(0.0, Math.min(1.0, newAccuracy));
-
+            double newAccuracy = Math.max(0.0, Math.min(1.0, t.getAccuracy() + adjustment));
             t.setAccuracy(newAccuracy);
             t.setFinalAccuracy(newAccuracy);
-
             r.setAccuracyChange(newAccuracy - r.getStartingAccuracy());
         }
     }
@@ -323,4 +336,14 @@ public class RaceScreen extends JPanel {
     public ArrayList<Result> getResults() {
         return results;
     }
+
+    private boolean allFinished() {
+        for (Typist t: typists) {
+            if (t.getProgress() < passage.length()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

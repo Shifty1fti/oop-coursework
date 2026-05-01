@@ -41,6 +41,7 @@ public class ResultScreen extends JPanel{
 
         tabs.add("Race Results", resultsPanel);
         tabs.add("Race History", buildHistoryPanel());
+        tabs.add("Leaderboard", buildLeaderboardPanel());
 
         wrapper.add(tabs);
         wrapper.add(buttonRow());
@@ -167,6 +168,33 @@ public class ResultScreen extends JPanel{
         return panel;
     }
 
+    private JPanel buildLeaderboardPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(0xeae4cf));
+
+        DefaultTableModel lbModel = new DefaultTableModel(
+            new String[]{"Rank", "Name", "Points", "Title"}, 0
+        );
+        JTable lbTable = new JTable(lbModel);
+        lbTable.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        lbTable.setRowHeight(28);
+
+        Leaderboard lb = raceHistory.getLeaderboard();
+        ArrayList<String> ranked = lb.getRanking();
+        for (int i = 0; i < ranked.size(); i++) {
+            String name = ranked.get(i);
+            lbModel.addRow(new Object[]{
+                i + 1,
+                name,
+                lb.getPoints(name),
+                lb.getTitle(name)
+            });
+        }
+
+        panel.add(new JScrollPane(lbTable), BorderLayout.CENTER);
+        return panel;
+    }
+
     // method that updates the table based off of user option 
     private void updateTable(String metric) {
 
@@ -210,7 +238,7 @@ public class ResultScreen extends JPanel{
             Object value;
 
             if (metric.equals("WPM")) {
-                value = String.format("%.2f", r.getWPM());
+                value = String.format("%.0f", r.getWPM());
             }
             else if (metric.equals("Accuracy")) {
                 value = String.format("%.2f", r.getAccuracy());

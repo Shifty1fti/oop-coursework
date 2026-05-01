@@ -2,11 +2,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RaceHistory {
-    // Maps typist name lists the Results across all races
-    private HashMap<String, ArrayList<Result>> history = new HashMap<>();
 
-    public void addResult(Result result) {
-        history.computeIfAbsent(result.getName(), k -> new ArrayList<>()).add(result);
+    private HashMap<String, ArrayList<Result>> history = new HashMap<>();
+    private Leaderboard leaderboard = new Leaderboard();  // ADD
+
+    public void addResult(Result r, int totalTypists) {  // CHANGE signature
+        history.computeIfAbsent(r.getName(), k -> new ArrayList<>()).add(r);
+        leaderboard.addResult(r, totalTypists);  // ADD
     }
 
     public double getPersonalBestWPM(String name) {
@@ -21,7 +23,5 @@ public class RaceHistory {
         return history.getOrDefault(name, new ArrayList<>());
     }
 
-    public HashMap<String, ArrayList<Result>> getAllHistory() {
-        return history;
-    }
+    public Leaderboard getLeaderboard() { return leaderboard; }  // ADD
 }

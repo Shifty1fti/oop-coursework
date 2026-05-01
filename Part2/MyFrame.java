@@ -45,7 +45,7 @@ public class MyFrame extends JFrame {
     }
 
     public void showLeaderboard() {
-        System.out.println("Placeholder");
+        showResults();
     }
 
     // runs settings screen
@@ -86,14 +86,12 @@ public class MyFrame extends JFrame {
     public void showResults() {
         currentResults = raceScreen.getResults();
 
-        for (Result r: currentResults) {
-            raceHistory.addResult(r);
+        for (Result r : currentResults) {
+            raceHistory.addResult(r, currentResults.size());  // CHANGE: pass size
         }
 
         resultScreen = new ResultScreen(currentResults, raceHistory, () -> showStartup());
-
         setContentPane(resultScreen);
-
         revalidate();
         repaint();
     }

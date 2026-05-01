@@ -7,16 +7,17 @@ import javax.swing.table.DefaultTableModel;
 public class ResultScreen extends JPanel{
     
     private Runnable onPlay;
-
     private ArrayList<Result> results;
+    private RaceHistory raceHistory;
 
     private JComboBox<String> metricSelect;
     private JTable table;
     private DefaultTableModel tableModel;
 
-    public ResultScreen(ArrayList<Result> results, Runnable  onPlay) {
+    public ResultScreen(ArrayList<Result> results,RaceHistory raceHistory, Runnable  onPlay) {
         this.results = results;
         this.onPlay = onPlay;
+        this.raceHistory = raceHistory;
 
         setBackground(new Color(0xeae4cf));
         setLayout(new BorderLayout());
@@ -29,8 +30,19 @@ public class ResultScreen extends JPanel{
         wrapper.setBackground(new Color(0xeae4cf));
         wrapper.setPreferredSize(new Dimension(800, 500));
 
-        wrapper.add(selectRow());
-        wrapper.add(tableRow());
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.setFont(new Font("Monospaced", Font.BOLD, 16));
+
+        JPanel resultsPanel = new JPanel();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        resultsPanel.setBackground(new Color(0xeae4cf));
+        resultsPanel.add(selectRow());
+        resultsPanel.add(tableRow());
+
+        tabs.add("Race Results", resultsPanel);
+        tabs.add("Race History", buildHistoryPanel());
+
+        wrapper.add(tabs);
         wrapper.add(buttonRow());
 
         center.add(wrapper);
@@ -107,6 +119,54 @@ public class ResultScreen extends JPanel{
         return row;
     }
 
+    private JPanel buildHistoryPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(0xeae4cf));
+
+        String[] names = results.stream().map(Result::getName).toArray(String[]::new);
+        JComboBox<String> typistSelect = new JComboBox<>(names);
+        typistSelect.setFont(new Font("Monospaced", Font.PLAIN, 16));
+
+        JLabel label = new JLabel("View history for: ");
+        label.setFont(new Font("Monospaced", Font.BOLD, 18));
+        label.setForeground(new Color(0xada998));
+
+        JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        top.setBackground(new Color(0xeae4cf));
+        top.add(label);
+        top.add(typistSelect);
+
+        DefaultTableModel histModel = new DefaultTableModel(
+            new String[]{"Race #", "Position", "WPM", "Accuracy", "Burnouts"}, 0
+        );
+        JTable histTable = new JTable(histModel);
+        histTable.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        histTable.setRowHeight(28);
+
+        Runnable refresh = () -> {
+            histModel.setRowCount(0);
+            String name = (String) typistSelect.getSelectedItem();
+            ArrayList<Result> typistHistory = raceHistory.getHistory(name);
+            for (int i = 0; i < typistHistory.size(); i++) {
+                Result r = typistHistory.get(i);
+                histModel.addRow(new Object[]{
+                    i + 1,
+                    r.getPosition(),
+                    String.format("%.2f", r.getWPM()),
+                    String.format("%.1f%%", r.getAccuracy() * 100),
+                    r.getBurnoutCount()
+                });
+            }
+        };
+
+        typistSelect.addActionListener(e -> refresh.run());
+        refresh.run();
+
+        panel.add(top, BorderLayout.NORTH);
+        panel.add(new JScrollPane(histTable), BorderLayout.CENTER);
+        return panel;
+    }
+
     // method that updates the table based off of user option 
     private void updateTable(String metric) {
 
@@ -115,6 +175,7 @@ public class ResultScreen extends JPanel{
 
         tableModel.addColumn("Position");
         tableModel.addColumn("Name");
+        tableModel.addColumn("Best WPM");
         tableModel.addColumn(metric);
 
         // Sort results based on selected metric
@@ -167,9 +228,11 @@ public class ResultScreen extends JPanel{
                 value = "";
             }
 
+            double personalBest = raceHistory.getPersonalBestWPM(r.getName());
             tableModel.addRow(new Object[]{
                 rank + 1,  // Display sort rank based on selected metric
                 r.getName(),
+                personalBest,
                 value});
         }
     }

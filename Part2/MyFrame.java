@@ -13,6 +13,7 @@ public class MyFrame extends JFrame {
     private TypistScreen typistScreen;
     private ArrayList<Typist> currentTypists;
     private ArrayList<Result> currentResults;
+    private RaceHistory raceHistory = new RaceHistory();
 
     public MyFrame() {
         setSize(2880, 1800);
@@ -24,6 +25,7 @@ public class MyFrame extends JFrame {
         setIconImage(image.getImage());
 
         settings = new GameSettings();
+        
 
         // method called which originally is run
         showStartup();
@@ -84,7 +86,11 @@ public class MyFrame extends JFrame {
     public void showResults() {
         currentResults = raceScreen.getResults();
 
-        resultScreen = new ResultScreen(currentResults, () -> showStartup());
+        for (Result r: currentResults) {
+            raceHistory.addResult(r);
+        }
+
+        resultScreen = new ResultScreen(currentResults, raceHistory, () -> showStartup());
 
         setContentPane(resultScreen);
 

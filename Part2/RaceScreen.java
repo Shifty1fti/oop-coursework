@@ -265,6 +265,7 @@ public class RaceScreen extends JPanel {
         // Create results for each typist
         for (Typist t : typists) {
             double wpm = (t.getProgress() / 5.0) / minutes;
+            t.updateBestWPM(wpm);
 
             // create result object
             Result r = new Result(
@@ -280,6 +281,7 @@ public class RaceScreen extends JPanel {
             // link result with typist
             r.setTypist(t);
             results.add(r);
+            t.getHistory().add(r);
         }
 
         // Sort by progress

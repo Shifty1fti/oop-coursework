@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Typist class which is used as an object with all the attributes that need to be tracked being the symbol, name, accuracy, progress, the state of burnout, and how long they have been burned.
@@ -30,6 +31,10 @@ public class Typist
     private int burnoutCount = 0;
     private double startingAccuracy;
     private double finalAccuracy;
+
+    private ArrayList<Result> history = new ArrayList<>();
+
+    private double bestWPM = 0;
 
     // Constructor of class Typist
     /**
@@ -293,6 +298,20 @@ public class Typist
     public double calculateWPM(double minutes) {
         double words = currentProgress / 5.0;
         return words / minutes;
+    }
+
+    public double getBestWPM() {
+        return bestWPM;
+    }
+
+    public void updateBestWPM(double wpm) {
+        if (wpm > bestWPM) {
+            bestWPM = wpm;
+        }
+    }
+
+    public ArrayList<Result> getHistory() {
+        return history;
     }
 
 }

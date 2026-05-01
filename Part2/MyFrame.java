@@ -83,8 +83,8 @@ public class MyFrame extends JFrame {
     // displays race results
     public void showResults() {
         currentResults = raceScreen.getResults();
-        
-        resultScreen = new ResultScreen(currentResults);
+
+        resultScreen = new ResultScreen(currentResults, () -> showStartup());
 
         setContentPane(resultScreen);
 

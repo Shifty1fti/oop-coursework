@@ -6,14 +6,17 @@ import javax.swing.table.DefaultTableModel;
 // class that creates the result screen after a round has ended
 public class ResultScreen extends JPanel{
     
+    private Runnable onPlay;
+
     private ArrayList<Result> results;
 
     private JComboBox<String> metricSelect;
     private JTable table;
     private DefaultTableModel tableModel;
 
-    public ResultScreen(ArrayList<Result> results) {
+    public ResultScreen(ArrayList<Result> results, Runnable  onPlay) {
         this.results = results;
+        this.onPlay = onPlay;
 
         setBackground(new Color(0xeae4cf));
         setLayout(new BorderLayout());
@@ -28,6 +31,7 @@ public class ResultScreen extends JPanel{
 
         wrapper.add(selectRow());
         wrapper.add(tableRow());
+        wrapper.add(buttonRow());
 
         center.add(wrapper);
         add(center, BorderLayout.CENTER);
@@ -79,6 +83,26 @@ public class ResultScreen extends JPanel{
         JScrollPane scroll = new JScrollPane(table);
 
         row.add(scroll, BorderLayout.CENTER);
+
+        return row;
+    }
+
+    private JPanel buttonRow() {
+        JPanel row = new JPanel();
+        row.setBackground(new Color(0xeae4cf));
+
+        JButton backButton = new JButton("Return to Menu");
+
+        backButton.setFont(new Font("Monospaced", Font.BOLD, 20));
+        backButton.setBackground(new Color(0xada998));
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
+
+        backButton.addActionListener(e -> {
+            onPlay.run();
+        });
+
+        row.add(backButton);
 
         return row;
     }

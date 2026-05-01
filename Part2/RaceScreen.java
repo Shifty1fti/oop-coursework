@@ -11,6 +11,7 @@ public class RaceScreen extends JPanel {
     private GameSettings settings;
     private Runnable onFinish;
     private String passage;
+    private ArrayList<Result> results = new ArrayList<>();
 
     private JTextPane[] textPanes;
     private StyledDocument[] docs;
@@ -23,6 +24,9 @@ public class RaceScreen extends JPanel {
     private Style[] originalStyle;
     private Style[] completeStyle;
     
+    // counts total amount of turns
+    private int totalTurns = 0;
+
     
     // constructor method that displays all the pages 
     public RaceScreen(GameSettings settings,ArrayList<Typist> typists, Runnable onFinish) {
@@ -107,6 +111,9 @@ public class RaceScreen extends JPanel {
     // logic which starts the race and updates text and cursor every 0.2 seconds for the typist
     private void startRace() {
         Timer timer = new Timer(200, e -> {
+
+            totalTurns++;
+
             race.advance();
             updateText();
             updateCursor();
@@ -115,6 +122,8 @@ public class RaceScreen extends JPanel {
             // stops race and runs back to setting screen
             if (race.isFinished()) {
                 ((Timer) e.getSource()).stop();
+
+                calculateResults();
                 onFinish.run();
             }
         });
@@ -233,5 +242,72 @@ public class RaceScreen extends JPanel {
                 textPanes[i].getCaret().setVisible(false);
             }
         }
+    }
+    
+    // method that calculates final accuracy 
+    private void calculateResults() {
+        double timeSeconds = totalTurns * 0.2;
+        double minutes = timeSeconds / 60.0;
+
+        results.clear();
+
+        // Create results for each typist
+        for (Typist t : typists) {
+            double wpm = (t.getProgress() / 5.0) / minutes;
+
+            // create result object
+            Result r = new Result(
+                t.getName(),
+                0,
+                wpm,
+                t.getAccuracy(),
+                t.getAccuracy() - t.getStartingAccuracy(),
+                t.getBurnoutCount(),
+                timeSeconds
+            );
+
+            // link result with typist
+            r.setTypist(t);
+            results.add(r);
+        }
+
+        // Sort by progress
+        results.sort((a, b) -> 
+            b.getTypist().getProgress() - a.getTypist().getProgress()
+        );
+
+        // Assign positions + adjust accuracy
+        for (int i = 0; i < results.size(); i++) {
+            Result r = results.get(i);
+            Typist t = r.getTypist();
+
+            r.setPosition(i + 1);
+
+            double adjustment = 0;
+
+            if (i == 0) {
+                adjustment += 0.05;
+            }
+            else if (i == 1) {
+                adjustment += 0.02;
+            }
+            else if (i == 2) {
+                adjustment += 0.01;
+            }
+
+            adjustment -= t.getBurnoutCount() * 0.02;
+
+            double newAccuracy = t.getAccuracy() + adjustment;
+            newAccuracy = Math.max(0.0, Math.min(1.0, newAccuracy));
+
+            t.setAccuracy(newAccuracy);
+            t.setFinalAccuracy(newAccuracy);
+
+            r.setAccuracyChange(newAccuracy - r.getStartingAccuracy());
+        }
+    }
+
+    public ArrayList<Result> getResults() {
+        return results;
     }
 }

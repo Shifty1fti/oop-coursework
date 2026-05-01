@@ -8,8 +8,11 @@ public class MyFrame extends JFrame {
     private StartupScreen startupScreen;
     private SettingScreen settingScreen;
     private RaceScreen raceScreen;
+    private ResultScreen resultScreen;
     private GameSettings settings;
     private TypistScreen typistScreen;
+    private ArrayList<Typist> currentTypists;
+    private ArrayList<Result> currentResults;
 
     public MyFrame() {
         setSize(2880, 1800);
@@ -67,11 +70,23 @@ public class MyFrame extends JFrame {
 
         settings.setPassage(settings.generate());
 
-        ArrayList<Typist> typists = typistScreen.buildTypists();
+        currentTypists = typistScreen.buildTypists();
 
-        raceScreen = new RaceScreen(settings,typists, () -> showSettings());
+        raceScreen = new RaceScreen(settings, currentTypists, () -> showResults());
 
         setContentPane(raceScreen);
+
+        revalidate();
+        repaint();
+    }
+
+    // displays race results
+    public void showResults() {
+        currentResults = raceScreen.getResults();
+        
+        resultScreen = new ResultScreen(currentResults);
+
+        setContentPane(resultScreen);
 
         revalidate();
         repaint();

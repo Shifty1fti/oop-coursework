@@ -1,6 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 
+// class that displays the start up menu screen
 public class StartupScreen extends JPanel {
 
     public StartupScreen(Runnable onPlay, Runnable onLeaderboard, Runnable onQuit) {
@@ -27,6 +28,7 @@ public class StartupScreen extends JPanel {
         add(center, BorderLayout.CENTER);
     }
 
+    // method that outputs typeracer onto the screen
     private JPanel title() {
         JPanel row = new JPanel();
         row.setBackground(new Color(0xeae4cf));
@@ -39,6 +41,7 @@ public class StartupScreen extends JPanel {
         return row;
     }
 
+    // method that creates a button which directs user to settings
     private JPanel playButton(Runnable onPlay) {
         JPanel row = new JPanel();
         row.setBackground(new Color(0xeae4cf));
@@ -52,6 +55,7 @@ public class StartupScreen extends JPanel {
         return row;
     }
 
+    // method that creates a button for leaderboard
     private JPanel leaderboardButton(Runnable onLeaderboard) {
         JPanel row = new JPanel();
         row.setBackground(new Color(0xeae4cf));
@@ -65,6 +69,7 @@ public class StartupScreen extends JPanel {
         return row;
     }
 
+    // method that creates a button to quit
     private JPanel quitButton(Runnable onQuit) {
         JPanel row = new JPanel();
         row.setBackground(new Color(0xeae4cf));
@@ -79,7 +84,7 @@ public class StartupScreen extends JPanel {
     }
 
 
-
+    // method that is a general style for buttons
     private void styleButton(JButton button) {
         button.setFont(new Font("Monospaced", Font.BOLD, 22));
         button.setBackground(new Color(0xeae4cf));

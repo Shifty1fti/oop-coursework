@@ -27,8 +27,9 @@ public class Typist
     private double burnoutModifier;
     private Color colour; // assigning colour to typist for the text
 
-
-
+    private int burnoutCount = 0;
+    private double startingAccuracy;
+    private double finalAccuracy;
 
     // Constructor of class Typist
     /**
@@ -49,6 +50,9 @@ public class Typist
         this.burnTurns = 0;
         this.ifMistype = false;
         this.burnoutModifier = 1.0;
+
+        this.typistAccuracy = typistAccuracy;
+        this.startingAccuracy = typistAccuracy;
     }
 
 
@@ -64,6 +68,7 @@ public class Typist
     {
         this.isBurned = true;
 	    this.burnTurns = Math.max(1, (int)(turns * this.burnoutModifier));
+        this.burnoutCount++;
     }
 
     /**
@@ -165,6 +170,7 @@ public class Typist
         this.burnTurns = 0;
         this.currentProgress = 0;
         this.ifMistype = false;
+        this.burnoutCount = 0;  // Clear burnout count for new race
     }
 
     /**
@@ -266,6 +272,27 @@ public class Typist
     // getter method that retrieves colour from object
     public Color getColour() {
         return this.colour;
+    }
+
+    public int getBurnoutCount() {
+        return burnoutCount;
+    }
+
+    public double getStartingAccuracy() {
+        return startingAccuracy;
+    }
+
+    public double getFinalAccuracy() {
+        return finalAccuracy;
+    }
+
+    public void setFinalAccuracy(double acc) {
+        this.finalAccuracy = acc;
+    }
+
+    public double calculateWPM(double minutes) {
+        double words = currentProgress / 5.0;
+        return words / minutes;
     }
 
 }

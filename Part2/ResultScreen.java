@@ -31,7 +31,7 @@ public class ResultScreen extends JPanel{
         wrapper.setPreferredSize(new Dimension(800, 500));
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.setFont(new Font("Monospaced", Font.BOLD, 16));
+        tabs.setFont(new Font("Monospaced", Font.BOLD, 22));
 
         JPanel resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
@@ -58,7 +58,7 @@ public class ResultScreen extends JPanel{
         row.setBackground(new Color(0xeae4cf));
 
         JLabel label = new JLabel("Select Metric:");
-        label.setFont(new Font("Monospaced", Font.BOLD, 22));
+        label.setFont(new Font("Monospaced", Font.BOLD, 30));
         label.setForeground(new Color(0xada998));
 
         metricSelect = new JComboBox<>(new String[] {
@@ -106,7 +106,7 @@ public class ResultScreen extends JPanel{
 
         JButton backButton = new JButton("Return to Menu");
 
-        backButton.setFont(new Font("Monospaced", Font.BOLD, 20));
+        backButton.setFont(new Font("Monospaced", Font.BOLD, 30));
         backButton.setBackground(new Color(0xada998));
         backButton.setForeground(Color.WHITE);
         backButton.setFocusPainted(false);
@@ -126,7 +126,7 @@ public class ResultScreen extends JPanel{
 
         String[] names = results.stream().map(Result::getName).toArray(String[]::new);
         JComboBox<String> typistSelect = new JComboBox<>(names);
-        typistSelect.setFont(new Font("Monospaced", Font.PLAIN, 16));
+        typistSelect.setFont(new Font("Monospaced", Font.PLAIN, 22));
 
         JLabel label = new JLabel("View history for: ");
         label.setFont(new Font("Monospaced", Font.BOLD, 18));

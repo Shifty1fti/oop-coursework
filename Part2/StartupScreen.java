@@ -86,7 +86,7 @@ public class StartupScreen extends JPanel {
 
     // method that is a general style for buttons
     private void styleButton(JButton button) {
-        button.setFont(new Font("Monospaced", Font.BOLD, 22));
+        button.setFont(new Font("Monospaced", Font.BOLD, 30));
         button.setBackground(new Color(0xeae4cf));
         button.setForeground(new Color(0xada998));
         button.setFocusPainted(false);

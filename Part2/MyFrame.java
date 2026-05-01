@@ -83,7 +83,7 @@ public class MyFrame extends JFrame {
     }
 
     // displays race results
-    public void showResults() {
+        public void showResults() {
         currentResults = raceScreen.getResults();
 
         for (Result r : currentResults) {

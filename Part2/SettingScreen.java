@@ -41,7 +41,7 @@ public class SettingScreen extends JPanel {
 
         // button created which submits the information using action listener
         JButton submit = new JButton("Player Settings");
-        submit.setFont(new Font("Monospaced", Font.BOLD, 22));
+        submit.setFont(new Font("Monospaced", Font.BOLD, 30));
         submit.setBackground(new Color(0xeae4cf));
         submit.setForeground(new Color(0xada998));
 
@@ -83,7 +83,7 @@ public class SettingScreen extends JPanel {
         row.setBackground(new Color(0xeae4cf));
 
         JLabel label = new JLabel("Players (2-6): ");
-        label.setFont(new Font("Monospaced", Font.BOLD, 22));
+        label.setFont(new Font("Monospaced", Font.BOLD, 30));
         label.setForeground(new Color(0xada998));
 
         playerSlider = new JSlider(2, 6, settings.getAmount());
@@ -103,7 +103,7 @@ public class SettingScreen extends JPanel {
         row.setBackground(new Color(0xeae4cf));
 
         JLabel label = new JLabel("Passage Type: ");
-        label.setFont(new Font("Monospaced", Font.BOLD, 22));
+        label.setFont(new Font("Monospaced", Font.BOLD, 30));
         label.setForeground(new Color(0xada998));
 
         passageCombo = new JComboBox<>(new String[]{"Short", "Medium", "Long", "Custom"});
@@ -122,13 +122,13 @@ public class SettingScreen extends JPanel {
         row.setBackground(new Color(0xeae4cf));
 
         JLabel label = new JLabel("Passage Text");
-        label.setFont(new Font("Monospaced", Font.BOLD, 22));
+        label.setFont(new Font("Monospaced", Font.BOLD, 30));
         label.setForeground(new Color(0xada998));
 
         passageArea = new JTextArea(4, 40);
         passageArea.setLineWrap(true);
         passageArea.setWrapStyleWord(true);
-        passageArea.setFont(new Font("Monospaced", Font.BOLD, 22));
+        passageArea.setFont(new Font("Monospaced", Font.BOLD, 30));
         passageArea.setForeground(new Color(0xada998));
 
         passageArea.setEditable(false);
@@ -150,7 +150,7 @@ public class SettingScreen extends JPanel {
         caffeineBox = new JCheckBox("Caffeine Mode", settings.getCaffeine());
         nightBox = new JCheckBox("Night Shift", settings.getNight());
 
-        Font font = new Font("Monospaced", Font.BOLD, 22);
+        Font font = new Font("Monospaced", Font.BOLD, 30);
 
 
         autocorrectBox.setFont(font);

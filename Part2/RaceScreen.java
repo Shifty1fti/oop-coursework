@@ -94,7 +94,7 @@ public class RaceScreen extends JPanel {
         // creates a text pane to store the text
         textPanes[index] = new JTextPane();
         textPanes[index].setEditable(false);
-        textPanes[index].setFont(new Font("Monospaced", Font.BOLD, 30));
+        textPanes[index].setFont(new Font("Monospaced", Font.BOLD, 22));
         textPanes[index].setBackground(new Color(0xeae4cf));
         textPanes[index].setCaretColor(t.getColour());
         docs[index] = textPanes[index].getStyledDocument();
@@ -272,17 +272,18 @@ public class RaceScreen extends JPanel {
     
     // method that calculates final accuracy 
     private void calculateResults() {
+        
+        double timeSeconds = totalTurns * 0.2;
+        double minutes = timeSeconds / 60.0;
+
         results.clear();
 
+        // Create results for each typist
         for (Typist t : typists) {
-            // use per-typist finish time instead of totalTurns
-            int turns = finishTurns.getOrDefault(t.getName(), totalTurns);
-            double timeSeconds = turns * 0.2;
-            double minutes = timeSeconds / 60.0;
-
-            double wpm = Math.round((passage.length() / 5.0) / minutes);
+            double wpm = (t.getProgress() / 5.0) / minutes;
             t.updateBestWPM(wpm);
 
+            // create result object
             Result r = new Result(
                 t.getName(),
                 0,
@@ -293,19 +294,18 @@ public class RaceScreen extends JPanel {
                 timeSeconds
             );
 
+            // link result with typist
             r.setTypist(t);
             results.add(r);
             t.getHistory().add(r);
         }
 
-        // sort by finish time (fastest first)
-        results.sort((a, b) -> {
-            int turnsA = finishTurns.getOrDefault(a.getName(), totalTurns);
-            int turnsB = finishTurns.getOrDefault(b.getName(), totalTurns);
-            return Integer.compare(turnsA, turnsB);
-        });
+        // Sort by progress
+        results.sort((a, b) -> 
+            b.getTypist().getProgress() - a.getTypist().getProgress()
+        );
 
-        // assign positions + adjust accuracy
+        // Assign positions + adjust accuracy
         for (int i = 0; i < results.size(); i++) {
             Result r = results.get(i);
             Typist t = r.getTypist();
@@ -326,9 +326,12 @@ public class RaceScreen extends JPanel {
 
             adjustment -= t.getBurnoutCount() * 0.02;
 
-            double newAccuracy = Math.max(0.0, Math.min(1.0, t.getAccuracy() + adjustment));
+            double newAccuracy = t.getAccuracy() + adjustment;
+            newAccuracy = Math.max(0.0, Math.min(1.0, newAccuracy));
+
             t.setAccuracy(newAccuracy);
             t.setFinalAccuracy(newAccuracy);
+
             r.setAccuracyChange(newAccuracy - r.getStartingAccuracy());
         }
     }
